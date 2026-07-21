@@ -1,0 +1,42 @@
+export const SAMPLE_NOTIFICATIONS = [
+  {
+    id: 1,
+    title: 'Review published',
+    message: 'Your review for Tech Solutions Inc has been published.',
+    time: '2 hours ago',
+    type: 'review',
+    read: false,
+  },
+  {
+    id: 2,
+    title: 'Business reply',
+    message: 'Green Cafe replied to your review.',
+    time: '1 day ago',
+    type: 'reply',
+    read: false,
+  },
+  {
+    id: 3,
+    title: 'Trust score update',
+    message: 'FitLife Gym’s trust score improved after new verified reviews.',
+    time: '2 days ago',
+    type: 'trust',
+    read: false,
+  },
+  {
+    id: 4,
+    title: 'Review confirmation',
+    message: 'Your review is being analyzed for authenticity.',
+    time: '3 days ago',
+    type: 'system',
+    read: true,
+  },
+  {
+    id: 5,
+    title: 'Welcome to Check A Review',
+    message: 'Explore businesses and share honest feedback to help others decide.',
+    time: '1 week ago',
+    type: 'system',
+    read: true,
+  },
+]

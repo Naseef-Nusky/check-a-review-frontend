@@ -1,19 +1,48 @@
-import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { APP_NAME } from '../../utils/constants'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { APP_NAME, BUSINESS_PORTAL_URL } from '../../utils/constants'
+import { publicApi } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/common/AuthLayout'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
 
 export default function RegisterPage() {
   const [searchParams] = useSearchParams()
-  const defaultType = searchParams.get('type') === 'business' ? 'business' : 'customer'
-  const [accountType, setAccountType] = useState(defaultType)
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (searchParams.get('type') === 'business') {
+      window.location.href = `${BUSINESS_PORTAL_URL}/setup`
+    }
+  }, [searchParams])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert(`Registration submitted for ${accountType} account. Connect to backend API.`)
+    setError('')
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    setLoading(true)
+    try {
+      const { user, token } = await publicApi.register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: 'customer',
+      })
+      login(user, token)
+      navigate('/customer')
+    } catch (err) {
+      setError(err.message || 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -29,25 +58,13 @@ export default function RegisterPage() {
         </>
       }
     >
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-border bg-slate-50 p-1">
-        {['customer', 'business'].map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => setAccountType(type)}
-            className={`rounded-xl py-2.5 text-sm font-medium capitalize transition ${
-              accountType === type ? 'bg-white text-ink shadow-sm' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-
       <form onSubmit={handleSubmit} className="card space-y-5 p-6 sm:p-8">
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        )}
         <Input
           id="name"
-          label={accountType === 'business' ? 'Business Name' : 'Full Name'}
+          label="Full Name"
           type="text"
           required
           value={form.name}
@@ -77,9 +94,15 @@ export default function RegisterPage() {
           value={form.confirmPassword}
           onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
         />
-        <Button type="submit" className="w-full">
-          {accountType === 'business' ? 'Register Business' : 'Create Account'}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Creating...' : 'Create Account'}
         </Button>
+        <p className="text-center text-sm text-slate-500">
+          Registering a company?{' '}
+          <a href={`${BUSINESS_PORTAL_URL}/setup`} className="font-medium text-primary-700 hover:text-primary-800">
+            Go to business portal
+          </a>
+        </p>
       </form>
     </AuthLayout>
   )

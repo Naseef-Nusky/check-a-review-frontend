@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { APP_NAME } from '../../utils/constants'
+import { APP_NAME, BUSINESS_PORTAL_URL } from '../../utils/constants'
 
 const footerLinks = {
   Platform: [
@@ -8,8 +8,8 @@ const footerLinks = {
     { to: '/reviews', label: 'Latest Reviews' },
   ],
   'For Business': [
-    { to: '/register?type=business', label: 'Register Business' },
-    { to: '/business-portal', label: 'Business Dashboard' },
+    { href: `${BUSINESS_PORTAL_URL}/setup`, label: 'Register Business' },
+    { href: `${BUSINESS_PORTAL_URL}/login`, label: 'Business Dashboard' },
     { to: '/contact', label: 'Contact Sales' },
   ],
   Support: [
@@ -37,10 +37,16 @@ export default function Footer() {
               <h3 className="text-sm font-semibold uppercase tracking-wide text-white">{title}</h3>
               <ul className="mt-4 space-y-3">
                 {links.map((link) => (
-                  <li key={link.to}>
-                    <Link to={link.to} className="text-sm text-slate-400 transition hover:text-white">
-                      {link.label}
-                    </Link>
+                  <li key={link.label}>
+                    {link.href ? (
+                      <a href={link.href} className="text-sm text-slate-400 transition hover:text-white">
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link to={link.to} className="text-sm text-slate-400 transition hover:text-white">
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -49,7 +55,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-slate-800 pt-8 text-sm text-slate-500">
-          &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+          © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
         </div>
       </div>
     </footer>

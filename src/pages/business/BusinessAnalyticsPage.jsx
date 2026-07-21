@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 import StarRating from '../../components/common/StarRating'
 
@@ -25,10 +26,13 @@ export default function BusinessAnalyticsPage() {
           </div>
           <div className="mt-6 space-y-3">
             {ratingBreakdown.map((row) => (
-              <div key={row.stars} className="grid grid-cols-[2rem_1fr_2rem] items-center gap-3 text-sm">
-                <span className="font-medium tabular-nums text-slate-600">{row.stars}</span>
+              <div key={row.stars} className="grid grid-cols-[3.5rem_1fr_2rem] items-center gap-3 text-sm">
+                <span className="inline-flex items-center gap-1 font-medium tabular-nums text-slate-600">
+                  {row.stars}
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" strokeWidth={1.5} aria-hidden="true" />
+                </span>
                 <div className="h-2 rounded-full bg-slate-100">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-primary-500 to-primary-600" style={{ width: `${row.percent}%` }} />
+                  <div className="h-2 rounded-full bg-amber-400" style={{ width: `${row.percent}%` }} />
                 </div>
                 <span className="text-right tabular-nums text-slate-500">{row.count}</span>
               </div>

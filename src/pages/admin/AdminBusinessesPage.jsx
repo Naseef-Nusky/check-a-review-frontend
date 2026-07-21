@@ -1,12 +1,7 @@
 import PageHeader from '../../components/common/PageHeader'
 import Button from '../../components/common/Button'
 import StarRating from '../../components/common/StarRating'
-
-const businesses = [
-  { id: 1, name: 'Tech Solutions Inc', category: 'Technology', rating: 4.8, plan: 'Premium' },
-  { id: 2, name: 'Green Cafe', category: 'Food & Drink', rating: 4.6, plan: 'Starter' },
-  { id: 3, name: 'FitLife Gym', category: 'Health', rating: 4.9, plan: 'Premium' },
-]
+import { SAMPLE_BUSINESSES } from '../../data/sampleBusinesses'
 
 export default function AdminBusinessesPage() {
   return (
@@ -24,9 +19,19 @@ export default function AdminBusinessesPage() {
             </tr>
           </thead>
           <tbody>
-            {businesses.map((biz) => (
+            {SAMPLE_BUSINESSES.map((biz) => (
               <tr key={biz.id} className="border-b border-gray-100">
-                <td className="px-4 py-3 font-medium">{biz.name}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={biz.logo}
+                      alt=""
+                      className="h-10 w-10 rounded-xl object-cover"
+                      loading="lazy"
+                    />
+                    <span className="font-medium">{biz.name}</span>
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-gray-500">{biz.category}</td>
                 <td className="px-4 py-3"><StarRating rating={biz.rating} size="sm" /></td>
                 <td className="px-4 py-3">

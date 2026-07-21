@@ -22,3 +22,7 @@ export const SUBSCRIPTION_PLANS = {
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 export const ADMIN_CRM_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174'
+
+/** Business portal (subdomain in production, local business app in development) */
+export const BUSINESS_PORTAL_URL =
+  import.meta.env.VITE_BUSINESS_URL || 'http://localhost:5175'

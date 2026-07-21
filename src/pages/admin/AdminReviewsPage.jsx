@@ -1,5 +1,6 @@
 import PageHeader from '../../components/common/PageHeader'
 import Button from '../../components/common/Button'
+import StarRating from '../../components/common/StarRating'
 import { REVIEW_STATUS } from '../../utils/constants'
 
 const reviews = [
@@ -36,7 +37,9 @@ export default function AdminReviewsPage() {
               <tr key={review.id} className="border-b border-gray-100">
                 <td className="px-4 py-3 font-medium">{review.business}</td>
                 <td className="px-4 py-3">{review.author}</td>
-                <td className="px-4 py-3 tabular-nums">{review.rating}</td>
+                <td className="px-4 py-3">
+                  <StarRating rating={review.rating} size="sm" />
+                </td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusColors[review.status]}`}>
                     {review.status}

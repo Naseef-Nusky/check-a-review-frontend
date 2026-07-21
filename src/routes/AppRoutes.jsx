@@ -2,8 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 
 import PublicLayout from '../layouts/PublicLayout'
 import CustomerLayout from '../layouts/CustomerLayout'
-import BusinessLayout from '../layouts/BusinessLayout'
 import AdminLayout from '../layouts/AdminLayout'
+import BusinessPortalRedirect from '../components/common/BusinessPortalRedirect'
 
 import HomePage from '../pages/public/HomePage'
 import SearchPage from '../pages/public/SearchPage'
@@ -19,14 +19,6 @@ import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
 import CustomerDashboardPage from '../pages/customer/CustomerDashboardPage'
 import CustomerProfilePage from '../pages/customer/CustomerProfilePage'
 import CustomerNotificationsPage from '../pages/customer/CustomerNotificationsPage'
-
-import BusinessDashboardPage from '../pages/business/BusinessDashboardPage'
-import BusinessProfileManagePage from '../pages/business/BusinessProfileManagePage'
-import BusinessReviewsPage from '../pages/business/BusinessReviewsPage'
-import BusinessInvitationsPage from '../pages/business/BusinessInvitationsPage'
-import BusinessAnalyticsPage from '../pages/business/BusinessAnalyticsPage'
-import BusinessSubscriptionPage from '../pages/business/BusinessSubscriptionPage'
-import BusinessWidgetPage from '../pages/business/BusinessWidgetPage'
 
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import AdminUsersPage from '../pages/admin/AdminUsersPage'
@@ -54,20 +46,13 @@ export default function AppRoutes() {
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 
+      <Route path="business/setup" element={<BusinessPortalRedirect path="/setup" />} />
+      <Route path="business-portal/*" element={<BusinessPortalRedirect path="/" />} />
+
       <Route path="customer" element={<CustomerLayout />}>
         <Route index element={<CustomerDashboardPage />} />
         <Route path="profile" element={<CustomerProfilePage />} />
         <Route path="notifications" element={<CustomerNotificationsPage />} />
-      </Route>
-
-      <Route path="business-portal" element={<BusinessLayout />}>
-        <Route index element={<BusinessDashboardPage />} />
-        <Route path="profile" element={<BusinessProfileManagePage />} />
-        <Route path="reviews" element={<BusinessReviewsPage />} />
-        <Route path="invitations" element={<BusinessInvitationsPage />} />
-        <Route path="analytics" element={<BusinessAnalyticsPage />} />
-        <Route path="subscription" element={<BusinessSubscriptionPage />} />
-        <Route path="widget" element={<BusinessWidgetPage />} />
       </Route>
 
       <Route path="admin" element={<AdminLayout />}>
