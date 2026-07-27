@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell, MessageSquare, Pencil, Star } from 'lucide-react'
+import { MessageSquare, Pencil } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
-import StatCard from '../../components/common/StatCard'
 import ReviewCard from '../../components/review/ReviewCard'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 
-export default function CustomerDashboardPage() {
+export default function CustomerReviewsPage() {
   const { user } = useAuth()
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
@@ -35,50 +34,46 @@ export default function CustomerDashboardPage() {
     }
   }, [])
 
-  const averageRating =
-    reviews.length > 0
-      ? (reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / reviews.length).toFixed(1)
-      : '—'
-
   return (
     <div>
       <PageHeader
-        kicker="User portal"
-        title={`Welcome, ${user?.name || 'User'}`}
-        description="Manage your reviews, profile, and notifications in one place."
-      />
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
-        <StatCard label="My reviews" value={String(reviews.length)} icon={MessageSquare} />
-        <StatCard label="Average rating given" value={String(averageRating)} icon={Star} />
-        <StatCard label="Unread notifications" value="—" icon={Bell} />
-      </div>
-
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-ink">Your reviews</h2>
-        <Link to="/users/reviews" className="text-sm font-medium text-primary-700 hover:text-primary-800">
-          View all & edit →
+        kicker="Your activity"
+        title="My reviews"
+        description="All reviews you have written on Check A Review. You can edit any of them anytime."
+      >
+        <Link
+          to="/search"
+          className="inline-flex rounded-full bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
+        >
+          Write a review
         </Link>
-      </div>
+      </PageHeader>
 
       {loading && <p className="text-sm text-ink-muted">Loading your reviews...</p>}
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
+
       {!loading && !error && reviews.length === 0 && (
-        <div className="rounded-2xl border border-border bg-white px-6 py-10 text-center">
-          <p className="text-sm text-ink-muted">You haven&apos;t written any reviews yet.</p>
+        <div className="rounded-3xl border border-border bg-white px-6 py-14 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600">
+            <MessageSquare className="h-5 w-5" />
+          </div>
+          <p className="mt-4 text-lg font-semibold text-ink">No reviews yet</p>
+          <p className="mt-2 text-sm text-ink-muted">Share your experience with a business you know.</p>
           <Link
             to="/search"
-            className="mt-4 inline-flex rounded-full bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
+            className="mt-6 inline-flex rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
           >
-            Search businesses
+            Find a business
           </Link>
         </div>
       )}
+
       {!loading && reviews.length > 0 && (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-4">
           {reviews.map((review) => (
-            <div key={review.id} className="space-y-2">
+            <div key={review.id} className="rounded-3xl border border-border bg-white p-5 shadow-sm">
               <ReviewCard
                 review={{
                   ...review,
@@ -88,22 +83,22 @@ export default function CustomerDashboardPage() {
                 businessName={review.business_name}
                 showStatus
               />
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Link
                   to={`/users/reviews/${review.id}/edit`}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-primary-700"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  <Pencil className="h-3.5 w-3.5" />
+                  <Pencil className="h-4 w-4" />
                   Edit review
                 </Link>
-                {review.business_slug ? (
+                {review.business_slug && (
                   <Link
                     to={`/businesses/${review.business_slug}`}
                     className="text-sm font-medium text-primary-700 hover:text-primary-800"
                   >
                     View {review.business_name} →
                   </Link>
-                ) : null}
+                )}
               </div>
             </div>
           ))}

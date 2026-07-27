@@ -1,0 +1,267 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { publicApi } from '../../services/api'
+import Button from '../../components/common/Button'
+
+const COUNTRIES = [
+  'Sri Lanka',
+  'United States',
+  'United Kingdom',
+  'Canada',
+  'Australia',
+  'India',
+  'United Arab Emirates',
+]
+
+const LANGUAGES = [
+  { value: 'en-US', label: 'English (United States)' },
+  { value: 'en-GB', label: 'English (United Kingdom)' },
+  { value: 'si-LK', label: 'Sinhala' },
+  { value: 'ta-LK', label: 'Tamil' },
+]
+
+const EMAIL_PREFS = [
+  { key: 'marketing', label: 'Marketing emails', hint: 'Tips, offers, and product news from Check A Review.' },
+  { key: 'recommendations', label: 'Personalized recommendations', hint: 'Businesses and categories based on your activity.' },
+  { key: 'newsletter', label: 'Newsletter', hint: 'Monthly roundup of reviews and consumer insights.' },
+  { key: 'milestones', label: 'Review milestones', hint: 'Celebrate when your reviews help other people.' },
+  { key: 'invitations', label: 'Review invitations', hint: 'Get reminders when businesses invite your feedback.' },
+]
+
+function prefsKey(userId) {
+  return `user_settings_${userId || 'guest'}`
+}
+
+function loadPrefs(userId) {
+  try {
+    const raw = localStorage.getItem(prefsKey(userId))
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function getInitials(name = '') {
+  const parts = String(name).trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return 'U'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+}
+
+export default function CustomerSettingsPage() {
+  const { user, login, logout } = useAuth()
+  const saved = useMemo(() => loadPrefs(user?.id), [user?.id])
+
+  const [form, setForm] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    country: saved?.country || 'Sri Lanka',
+    language: saved?.language || 'en-US',
+  })
+  const [emailPrefs, setEmailPrefs] = useState(() => {
+    const defaults = Object.fromEntries(EMAIL_PREFS.map((item) => [item.key, true]))
+    return { ...defaults, ...(saved?.emailPrefs || {}) }
+  })
+  const [reviewCount, setReviewCount] = useState(0)
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      name: user?.name || '',
+      email: user?.email || '',
+    }))
+  }, [user])
+
+  useEffect(() => {
+    let active = true
+    publicApi
+      .getMyReviews()
+      .then((data) => {
+        if (!active) return
+        setReviewCount(Array.isArray(data) ? data.length : 0)
+      })
+      .catch(() => {
+        if (!active) return
+        setReviewCount(0)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const updateField = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    setMessage('')
+    try {
+      const updated = await publicApi.updateProfile({ name: form.name.trim() })
+      const token = localStorage.getItem('token')
+      login({ ...user, ...updated }, token)
+      localStorage.setItem(
+        prefsKey(user?.id),
+        JSON.stringify({
+          country: form.country,
+          language: form.language,
+          emailPrefs,
+        }),
+      )
+      setMessage('Your information has been saved.')
+    } catch (err) {
+      setError(err.message || 'Failed to save settings')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
+        <div className="flex flex-col gap-6 px-6 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="flex items-center gap-4">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-500 text-2xl font-semibold text-white">
+              {getInitials(user?.name)}
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-ink">{user?.name || 'User'}</h1>
+              <p className="mt-1 text-sm text-ink-muted">{user?.email}</p>
+            </div>
+          </div>
+          <div className="flex gap-8">
+            <Link to="/users/reviews" className="text-center">
+              <p className="text-2xl font-semibold tabular-nums text-ink">{reviewCount}</p>
+              <p className="text-sm text-ink-muted">{reviewCount === 1 ? 'Review' : 'Reviews'}</p>
+            </Link>
+            <div className="text-center">
+              <p className="text-2xl font-semibold tabular-nums text-ink">—</p>
+              <p className="text-sm text-ink-muted">Read</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-semibold tabular-nums text-ink">—</p>
+              <p className="text-sm text-ink-muted">Useful</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-6">
+          <form onSubmit={handleSave} className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="text-xl font-semibold text-ink">Personal settings</h2>
+            <p className="mt-1 text-sm text-ink-muted">Update your profile details and preferences.</p>
+
+            {error && (
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            )}
+            {message && (
+              <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{message}</div>
+            )}
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-700">
+                {getInitials(form.name)}
+              </div>
+              <Button type="button" variant="secondary" disabled>
+                Upload a new profile picture
+              </Button>
+              <button type="button" className="text-sm font-medium text-slate-500 hover:text-slate-800" disabled>
+                Remove my picture
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <label htmlFor="email" className="label-text text-slate-700">Email</label>
+                <input id="email" type="email" value={form.email} disabled className="input-field bg-slate-50" />
+              </div>
+              <div>
+                <label htmlFor="name" className="label-text text-slate-700">Name</label>
+                <input id="name" type="text" required value={form.name} onChange={updateField('name')} className="input-field" />
+              </div>
+              <div>
+                <label htmlFor="country" className="label-text text-slate-700">Country</label>
+                <select id="country" value={form.country} onChange={updateField('country')} className="input-field">
+                  {COUNTRIES.map((country) => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="language" className="label-text text-slate-700">Language</label>
+                <select id="language" value={form.language} onChange={updateField('language')} className="input-field">
+                  {LANGUAGES.map((language) => (
+                    <option key={language.value} value={language.value}>{language.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <Button type="submit" className="mt-6 rounded-full" disabled={saving}>
+              {saving ? 'Saving...' : 'Save information'}
+            </Button>
+          </form>
+
+          <section className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="text-xl font-semibold text-ink">Email settings</h2>
+            <p className="mt-1 text-sm text-ink-muted">Choose which emails you want to receive.</p>
+            <div className="mt-6 space-y-4">
+              {EMAIL_PREFS.map((pref) => (
+                <label key={pref.key} className="flex items-start justify-between gap-4 rounded-2xl border border-border px-4 py-4">
+                  <span>
+                    <span className="block text-sm font-semibold text-ink">{pref.label}</span>
+                    <span className="mt-1 block text-sm text-ink-muted">{pref.hint}</span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(emailPrefs[pref.key])}
+                    onChange={(e) => setEmailPrefs((prev) => ({ ...prev, [pref.key]: e.target.checked }))}
+                    className="mt-1 h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="text-xl font-semibold text-ink">Log out everywhere</h2>
+            <p className="mt-2 text-sm text-ink-muted">
+              Sign out of Check A Review on this device. You can sign back in anytime.
+            </p>
+            <Button type="button" className="mt-5 rounded-full" onClick={logout}>
+              Log out
+            </Button>
+          </section>
+
+          <section className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="text-xl font-semibold text-ink">Delete user</h2>
+            <p className="mt-2 text-sm text-ink-muted">
+              Permanently remove your profile and personal data from Check A Review.
+            </p>
+            <Button type="button" variant="secondary" className="mt-5 rounded-full" disabled>
+              Delete my profile
+            </Button>
+          </section>
+        </div>
+
+        <aside className="space-y-4">
+          <div className="rounded-3xl border border-border bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold text-ink">My Social Settings</h3>
+            <p className="mt-2 text-sm text-ink-muted">Connect social accounts to make sign-in easier.</p>
+            <Button type="button" variant="secondary" className="mt-4 w-full rounded-full" disabled>
+              Continue with Facebook
+            </Button>
+            <button type="button" className="mt-3 w-full text-left text-sm font-medium text-primary-700" disabled>
+              Disconnect Google profile
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  )
+}

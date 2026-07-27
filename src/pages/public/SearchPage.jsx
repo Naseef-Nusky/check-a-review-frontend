@@ -8,6 +8,7 @@ import { publicApi } from '../../services/api'
 function mapBusiness(business) {
   return {
     ...business,
+    logo: business.logo_url || business.logo,
     rating: Number(business.average_rating || 0),
     reviewCount: Number(business.review_count || 0),
   }
@@ -66,7 +67,7 @@ export default function SearchPage() {
       {!loading && !error && results.length === 0 && (
         <p className="mt-8 text-sm text-ink-muted">No businesses found. Try another search or category.</p>
       )}
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {results.map((business) => (
           <BusinessCard key={business.id} business={business} />
         ))}

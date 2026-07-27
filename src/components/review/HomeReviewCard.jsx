@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import StarRating from '../common/StarRating'
+import { resolveMediaUrl } from '../../utils/constants'
 import ProfileAvatar from '../common/ProfileAvatar'
 
 export default function HomeReviewCard({ review }) {
@@ -8,6 +9,7 @@ export default function HomeReviewCard({ review }) {
   const author = review.author || 'Anonymous'
   const business = review.business || {}
   const href = `/businesses/${business.slug || business.id || 1}`
+  const logoSrc = resolveMediaUrl(business.logo || business.logo_url)
 
   return (
     <article className="card flex h-full flex-col p-5">
@@ -29,11 +31,11 @@ export default function HomeReviewCard({ review }) {
         to={href}
         className="mt-5 flex items-center gap-3 border-t border-border pt-4 transition hover:opacity-90"
       >
-        {!logoFailed && business.logo ? (
+        {!logoFailed && logoSrc ? (
           <img
-            src={business.logo}
+            src={logoSrc}
             alt=""
-            className="h-10 w-10 shrink-0 rounded-xl object-cover"
+            className="h-10 w-10 shrink-0 rounded-xl object-contain bg-white"
             loading="lazy"
             onError={() => setLogoFailed(true)}
           />

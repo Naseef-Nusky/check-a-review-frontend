@@ -2,7 +2,7 @@ import { Users, Building2, MessageSquare, DollarSign } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 
 const stats = [
-  { icon: Users, label: 'Total Customers', value: '12,450', change: '+12%' },
+  { icon: Users, label: 'Total Users', value: '12,450', change: '+12%' },
   { icon: Building2, label: 'Total Businesses', value: '3,280', change: '+8%' },
   { icon: MessageSquare, label: 'Total Reviews', value: '48,920', change: '+15%' },
   { icon: DollarSign, label: 'Monthly Revenue', value: '$24,500', change: '+22%' },
@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
             <li>New business registered: Green Cafe</li>
             <li>Review flagged by AI: Spam detection</li>
             <li>Subscription upgraded: FitLife Gym → Premium</li>
-            <li>New customer registered: john@example.com</li>
+            <li>New user registered: john@example.com</li>
           </ul>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

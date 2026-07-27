@@ -8,6 +8,8 @@ import BusinessPortalRedirect from '../components/common/BusinessPortalRedirect'
 import HomePage from '../pages/public/HomePage'
 import SearchPage from '../pages/public/SearchPage'
 import BusinessProfilePage from '../pages/public/BusinessProfilePage'
+import WriteReviewPage from '../pages/public/WriteReviewPage'
+import ReviewInvitePage from '../pages/public/ReviewInvitePage'
 import CategoriesPage from '../pages/public/CategoriesPage'
 import LatestReviewsPage from '../pages/public/LatestReviewsPage'
 import ContactPage from '../pages/public/ContactPage'
@@ -18,7 +20,10 @@ import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
 
 import CustomerDashboardPage from '../pages/customer/CustomerDashboardPage'
 import CustomerProfilePage from '../pages/customer/CustomerProfilePage'
+import CustomerReviewsPage from '../pages/customer/CustomerReviewsPage'
+import CustomerSettingsPage from '../pages/customer/CustomerSettingsPage'
 import CustomerNotificationsPage from '../pages/customer/CustomerNotificationsPage'
+import EditReviewPage from '../pages/customer/EditReviewPage'
 
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import AdminUsersPage from '../pages/admin/AdminUsersPage'
@@ -38,6 +43,8 @@ export default function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="businesses/:id" element={<BusinessProfilePage />} />
+        <Route path="businesses/:id/write-review" element={<WriteReviewPage />} />
+        <Route path="review-invite/:token" element={<ReviewInvitePage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="reviews" element={<LatestReviewsPage />} />
         <Route path="contact" element={<ContactPage />} />
@@ -49,9 +56,12 @@ export default function AppRoutes() {
       <Route path="business/setup" element={<BusinessPortalRedirect path="/setup" />} />
       <Route path="business-portal/*" element={<BusinessPortalRedirect path="/" />} />
 
-      <Route path="customer" element={<CustomerLayout />}>
+      <Route path="users" element={<CustomerLayout />}>
         <Route index element={<CustomerDashboardPage />} />
         <Route path="profile" element={<CustomerProfilePage />} />
+        <Route path="reviews" element={<CustomerReviewsPage />} />
+        <Route path="reviews/:reviewId/edit" element={<EditReviewPage />} />
+        <Route path="settings" element={<CustomerSettingsPage />} />
         <Route path="notifications" element={<CustomerNotificationsPage />} />
       </Route>
 

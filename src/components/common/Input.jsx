@@ -1,4 +1,11 @@
-export default function Input({ label, id, className = '', ...props }) {
+import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+
+export default function Input({ label, id, className = '', type = 'text', ...props }) {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+  const inputType = isPassword ? (showPassword ? 'text' : 'password') : type
+
   return (
     <div>
       {label && (
@@ -6,7 +13,25 @@ export default function Input({ label, id, className = '', ...props }) {
           {label}
         </label>
       )}
-      <input id={id} className={`input-field ${className}`} {...props} />
+      <div className={isPassword ? 'relative' : undefined}>
+        <input
+          id={id}
+          type={inputType}
+          className={`input-field ${isPassword ? 'pr-11' : ''} ${className}`}
+          {...props}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-700"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

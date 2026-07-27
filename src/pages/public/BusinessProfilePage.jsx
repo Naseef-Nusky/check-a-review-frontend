@@ -1,24 +1,44 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import StarRating from '../../components/common/StarRating'
 import ReviewCard from '../../components/review/ReviewCard'
+import RatingDistribution from '../../components/review/RatingDistribution'
 import Badge from '../../components/common/Badge'
+import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
+import { resolveMediaUrl } from '../../utils/constants'
 
 export default function BusinessProfilePage() {
   const { id } = useParams()
+  const { isAuthenticated, isCustomer } = useAuth()
   const [business, setBusiness] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [myReviewId, setMyReviewId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
+  const [selectedStars, setSelectedStars] = useState([])
   const [logoFailed, setLogoFailed] = useState(false)
+
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [business?.logo_url, id])
+
+  const writeReviewPath = `/businesses/${id}/write-review`
+  const reviewActionHref = myReviewId
+    ? `/users/reviews/${myReviewId}/edit`
+    : isAuthenticated && isCustomer
+      ? writeReviewPath
+      : `/login?redirect=${encodeURIComponent(writeReviewPath)}`
+  const reviewActionLabel = myReviewId ? 'Edit your review' : 'Write a review'
 
   useEffect(() => {
     let active = true
     setLoading(true)
     setError('')
     setLogoFailed(false)
+    setSelectedStars([])
+    setMyReviewId(null)
 
     ;(async () => {
       try {
@@ -28,6 +48,21 @@ export default function BusinessProfilePage() {
         const reviewData = await publicApi.getBusinessReviews(profile.id)
         if (!active) return
         setReviews(reviewData.reviews || [])
+
+        if (isAuthenticated && isCustomer) {
+          try {
+            const myReviews = await publicApi.getMyReviews()
+            if (!active) return
+            const existing = (Array.isArray(myReviews) ? myReviews : []).find(
+              (item) =>
+                String(item.business_id) === String(profile.id) ||
+                String(item.business_slug) === String(profile.slug),
+            )
+            if (existing?.id) setMyReviewId(existing.id)
+          } catch {
+            // Ignore — user can still write/edit from My Reviews
+          }
+        }
       } catch (err) {
         if (!active) return
         setError(err.message || 'Business not found')
@@ -39,18 +74,22 @@ export default function BusinessProfilePage() {
     return () => {
       active = false
     }
-  }, [id])
+  }, [id, isAuthenticated, isCustomer])
 
   const filteredReviews = useMemo(() => {
-    if (!query.trim()) return reviews
+    let list = reviews
+    if (selectedStars.length > 0) {
+      list = list.filter((review) => selectedStars.includes(Math.round(Number(review.rating) || 0)))
+    }
+    if (!query.trim()) return list
     const q = query.trim().toLowerCase()
-    return reviews.filter(
+    return list.filter(
       (review) =>
         review.title?.toLowerCase().includes(q) ||
         review.content?.toLowerCase().includes(q) ||
         review.author_name?.toLowerCase().includes(q),
     )
-  }, [reviews, query])
+  }, [reviews, query, selectedStars])
 
   if (loading) {
     return <div className="mx-auto max-w-7xl px-4 py-16 text-sm text-ink-muted">Loading business...</div>
@@ -69,6 +108,7 @@ export default function BusinessProfilePage() {
   const rating = Number(business.average_rating || 0)
   const reviewCount = Number(business.review_count || 0)
   const trustScore = Math.round(Number(business.trust_score || 0))
+  const logoSrc = resolveMediaUrl(business.logo_url)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -76,11 +116,11 @@ export default function BusinessProfilePage() {
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 px-6 py-10 sm:px-10">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
             <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800">
-              {!logoFailed && business.logo_url ? (
+              {!logoFailed && logoSrc ? (
                 <img
-                  src={business.logo_url}
+                  src={logoSrc}
                   alt={`${business.name} logo`}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain p-1.5"
                   onError={() => setLogoFailed(true)}
                 />
               ) : (
@@ -94,6 +134,14 @@ export default function BusinessProfilePage() {
                 <StarRating rating={rating} showValue />
                 <span className="text-sm text-slate-300">{reviewCount} reviews</span>
                 <Badge tone="brand">Trust score {trustScore}%</Badge>
+              </div>
+              <div className="mt-5">
+                <Link
+                  to={reviewActionHref}
+                  className="inline-flex rounded-full bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
+                >
+                  {reviewActionLabel}
+                </Link>
               </div>
             </div>
           </div>
@@ -117,12 +165,19 @@ export default function BusinessProfilePage() {
               </div>
               <p className="mt-2 text-sm text-ink-muted">
                 Showing {filteredReviews.length} of {reviews.length} reviews
+                {selectedStars.length > 0
+                  ? ` · filtered by ${selectedStars
+                      .slice()
+                      .sort((a, b) => b - a)
+                      .map((s) => `${s}-star`)
+                      .join(', ')}`
+                  : ''}
               </p>
 
               <div className="mt-6 space-y-4">
                 {filteredReviews.length === 0 ? (
                   <div className="rounded-2xl border border-border px-4 py-8 text-center text-sm text-ink-muted">
-                    No reviews yet.
+                    No reviews match your filters.
                   </div>
                 ) : (
                   filteredReviews.map((review) => (
@@ -152,6 +207,33 @@ export default function BusinessProfilePage() {
 
           <aside className="space-y-4">
             <div className="rounded-2xl border border-border p-5">
+              <h3 className="font-semibold text-ink">Rating</h3>
+              <div className="mt-4 flex items-end gap-3">
+                <span className="text-5xl font-semibold tabular-nums text-ink">{rating.toFixed(1)}</span>
+                <div>
+                  <StarRating rating={rating} size="md" />
+                  <p className="mt-1 text-sm text-ink-muted">{reviewCount} total reviews</p>
+                </div>
+              </div>
+              <div className="mt-5">
+                <RatingDistribution
+                  reviews={reviews}
+                  selectedStars={selectedStars}
+                  onChange={setSelectedStars}
+                />
+              </div>
+              {selectedStars.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedStars([])}
+                  className="mt-3 text-sm font-medium text-primary-600 hover:text-primary-700"
+                >
+                  Clear rating filters
+                </button>
+              ) : null}
+            </div>
+
+            <div className="rounded-2xl border border-border p-5">
               <h3 className="font-semibold text-ink">Company details</h3>
               <dl className="mt-4 space-y-3 text-sm">
                 <div>
@@ -174,14 +256,25 @@ export default function BusinessProfilePage() {
             </div>
 
             <div className="rounded-2xl border border-border p-5">
-              <h3 className="font-semibold text-ink">Rating summary</h3>
-              <div className="mt-4 flex items-end gap-3">
-                <span className="text-5xl font-semibold tabular-nums text-ink">{rating.toFixed(1)}</span>
-                <div>
-                  <StarRating rating={rating} size="md" />
-                  <p className="mt-1 text-sm text-ink-muted">{reviewCount} total reviews</p>
-                </div>
-              </div>
+              <h3 className="font-semibold text-ink">
+                {myReviewId ? 'Update your review' : 'Share your experience'}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                {myReviewId
+                  ? `You already reviewed ${business.name}. You can edit your review anytime.`
+                  : `Help others by writing an honest review of ${business.name}.`}
+              </p>
+              <Link
+                to={reviewActionHref}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                {reviewActionLabel}
+              </Link>
+              {!isAuthenticated || !isCustomer ? (
+                <p className="mt-3 text-xs text-ink-muted">
+                  You&apos;ll need to log in with a user account first.
+                </p>
+              ) : null}
             </div>
           </aside>
         </div>

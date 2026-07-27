@@ -12,7 +12,7 @@ import {
 
 const sidebarLinks = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/users', label: 'Customers', icon: Users },
+  { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/businesses', label: 'Businesses', icon: Building2 },
   { to: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { to: '/admin/flagged', label: 'AI Flagged', icon: AlertTriangle },

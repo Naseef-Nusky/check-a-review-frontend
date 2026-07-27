@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom'
+
 export default function AuthLayout({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
       <div className="hero-grid relative hidden flex-col justify-between p-10 text-white lg:flex">
-        <img src="/logo-check-a-review.png" alt="Check A Review" className="h-10 w-auto object-contain" />
+        <Link to="/">
+          <img src="/logo-check-a-review.png" alt="Check A Review" className="h-10 w-auto object-contain" />
+        </Link>
         <div>
           <p className="section-kicker text-primary-200">Trusted reviews platform</p>
           <h2 className="mt-4 max-w-md text-4xl font-semibold tracking-tight">
@@ -18,7 +22,9 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
       <div className="flex items-center justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
-            <img src="/logo-check-a-review.png" alt="Check A Review" className="h-10 w-auto object-contain" />
+            <Link to="/">
+              <img src="/logo-check-a-review.png" alt="Check A Review" className="h-10 w-auto object-contain" />
+            </Link>
           </div>
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-ink">{title}</h1>

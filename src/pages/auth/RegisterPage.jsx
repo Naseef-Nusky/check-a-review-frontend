@@ -11,7 +11,14 @@ export default function RegisterPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
+  const redirectTo = searchParams.get('redirect') || '/users'
+  const invitedEmail = searchParams.get('email') || ''
+  const [form, setForm] = useState({
+    name: '',
+    email: invitedEmail,
+    password: '',
+    confirmPassword: '',
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -20,6 +27,12 @@ export default function RegisterPage() {
       window.location.href = `${BUSINESS_PORTAL_URL}/setup`
     }
   }, [searchParams])
+
+  useEffect(() => {
+    if (invitedEmail) {
+      setForm((prev) => ({ ...prev, email: invitedEmail }))
+    }
+  }, [invitedEmail])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -37,7 +50,7 @@ export default function RegisterPage() {
         role: 'customer',
       })
       login(user, token)
-      navigate('/customer')
+      navigate(redirectTo.startsWith('/') ? redirectTo : '/users')
     } catch (err) {
       setError(err.message || 'Registration failed')
     } finally {
@@ -52,7 +65,10 @@ export default function RegisterPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-primary-700 hover:text-primary-800">
+          <Link
+            to={redirectTo !== '/users' ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'}
+            className="font-medium text-primary-700 hover:text-primary-800"
+          >
             Sign in
           </Link>
         </>

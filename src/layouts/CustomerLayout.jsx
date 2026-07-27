@@ -1,12 +1,14 @@
 import { Outlet } from 'react-router-dom'
-import { Bell, LayoutDashboard, User } from 'lucide-react'
+import { Bell, LayoutDashboard, MessageSquare, Settings, User } from 'lucide-react'
 import Header from '../components/common/Header'
 import SidebarNav from '../components/common/SidebarNav'
 
 const sidebarLinks = [
-  { to: '/customer', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/customer/profile', label: 'My Profile', icon: User },
-  { to: '/customer/notifications', label: 'Notifications', icon: Bell },
+  { to: '/users', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/users/reviews', label: 'My Reviews', icon: MessageSquare },
+  { to: '/users/settings', label: 'My Settings', icon: Settings },
+  { to: '/users/profile', label: 'My Profile', icon: User },
+  { to: '/users/notifications', label: 'Notifications', icon: Bell },
 ]
 
 export default function CustomerLayout() {

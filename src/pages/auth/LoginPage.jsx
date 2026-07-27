@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { BUSINESS_PORTAL_URL } from '../../utils/constants'
+import { BUSINESS_PORTAL_URL, GOOGLE_CLIENT_ID } from '../../utils/constants'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
+import PasswordInput from '../../components/common/PasswordInput'
 
 function GoogleIcon() {
   return (
@@ -33,6 +34,27 @@ function AppleIcon() {
   )
 }
 
+function loadGoogleScript() {
+  if (window.google?.accounts?.id) return Promise.resolve()
+  const existing = document.querySelector('script[data-google-gsi]')
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener('load', () => resolve())
+      existing.addEventListener('error', () => reject(new Error('Failed to load Google sign-in')))
+    })
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.dataset.googleGsi = 'true'
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Failed to load Google sign-in'))
+    document.head.appendChild(script)
+  })
+}
+
 export default function LoginPage() {
   const [mode, setMode] = useState('providers') // providers | email
   const [email, setEmail] = useState('')
@@ -41,6 +63,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/users'
 
   const finishLogin = (user, token) => {
     if (user.role === 'business') {
@@ -52,7 +76,7 @@ export default function LoginPage() {
       return
     }
     login(user, token)
-    navigate('/customer')
+    navigate(redirectTo.startsWith('/') ? redirectTo : '/users')
   }
 
   const handleEmailSubmit = async (e) => {
@@ -65,6 +89,70 @@ export default function LoginPage() {
     } catch (err) {
       setError(err.message || 'Login failed')
     } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleCredential = async (response) => {
+    if (!response?.credential) {
+      setError('Google sign-in was cancelled or failed')
+      return
+    }
+    setLoading(true)
+    setError('')
+    try {
+      const { user, token } = await publicApi.loginWithGoogle(response.credential)
+      finishLogin(user, token)
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogle = async () => {
+    setError('')
+    if (!GOOGLE_CLIENT_ID) {
+      setError(
+        'Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID to the frontend .env (and GOOGLE_CLIENT_ID on the backend).',
+      )
+      return
+    }
+
+    setLoading(true)
+    try {
+      await loadGoogleScript()
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+        ux_mode: 'popup',
+      })
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Fallback: render a temporary One Tap / button click via google.accounts.id.renderButton
+          const host = document.createElement('div')
+          host.style.position = 'fixed'
+          host.style.left = '-9999px'
+          document.body.appendChild(host)
+          window.google.accounts.id.renderButton(host, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            width: 320,
+          })
+          const btn = host.querySelector('div[role="button"]')
+          if (btn) btn.click()
+          else {
+            setError(
+              'Google sign-in popup was blocked. Allow popups for this site, or check Authorized JavaScript origins in Google Cloud Console.',
+            )
+          }
+          setTimeout(() => host.remove(), 2000)
+        }
+        setLoading(false)
+      })
+    } catch (err) {
+      setError(err.message || 'Could not start Google sign-in')
       setLoading(false)
     }
   }
@@ -87,15 +175,22 @@ export default function LoginPage() {
               Log in or sign up below
             </p>
 
+            {error && mode === 'providers' && (
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
             {mode === 'providers' ? (
               <div className="mt-6 space-y-3">
                 <button
                   type="button"
-                  onClick={() => handleSocial('Google')}
-                  className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                  onClick={handleGoogle}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:opacity-60"
                 >
                   <GoogleIcon />
-                  Continue with Google
+                  {loading ? 'Connecting...' : 'Continue with Google'}
                 </button>
                 <button
                   type="button"
@@ -137,22 +232,18 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between">
-                    <label htmlFor="password" className="text-sm font-medium text-slate-700">Password</label>
+                <PasswordInput
+                  id="password"
+                  label="Password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  labelRight={
                     <Link to="/forgot-password" className="text-sm font-medium text-primary-700 hover:text-primary-800">
                       Forgot password?
                     </Link>
-                  </div>
-                  <input
-                    id="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-field"
-                  />
-                </div>
+                  }
+                />
                 <Button type="submit" className="w-full rounded-full" disabled={loading}>
                   {loading ? 'Signing in...' : 'Continue'}
                 </Button>
@@ -165,7 +256,10 @@ export default function LoginPage() {
                 </button>
                 <p className="text-center text-sm text-slate-500">
                   New here?{' '}
-                  <Link to="/register" className="font-medium text-primary-700 hover:text-primary-800">
+                  <Link
+                    to={redirectTo !== '/users' ? `/register?redirect=${encodeURIComponent(redirectTo)}` : '/register'}
+                    className="font-medium text-primary-700 hover:text-primary-800"
+                  >
                     Create an account
                   </Link>
                 </p>

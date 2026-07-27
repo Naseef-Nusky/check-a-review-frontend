@@ -10,7 +10,7 @@ const users = [
 export default function AdminUsersPage() {
   return (
     <div>
-      <PageHeader title="Manage Customers" description="View and manage customer accounts" />
+      <PageHeader title="Manage Users" description="View and manage user accounts" />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">

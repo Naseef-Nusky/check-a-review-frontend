@@ -131,7 +131,7 @@ export default function NotificationPanel({ open, onClose }) {
 
         {isCustomer && (
           <div className="border-t border-slate-100 p-4">
-            <Link to="/customer/notifications" onClick={onClose} className="block">
+            <Link to="/users/notifications" onClick={onClose} className="block">
               <Button variant="secondary" className="w-full">
                 View all notifications
               </Button>

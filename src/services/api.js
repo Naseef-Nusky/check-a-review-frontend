@@ -39,6 +39,7 @@ export const api = {
 
 export const publicApi = {
   login: (email, password) => api.post('/auth/login', { email, password }),
+  loginWithGoogle: (credential) => api.post('/auth/google', { credential }),
   register: (data) => api.post('/auth/register', data),
   searchBusinesses: (params = {}) => {
     const query = new URLSearchParams()
@@ -54,6 +55,12 @@ export const publicApi = {
   getBusinessReviews: (businessId, limit = 20) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),
   getLatestReviews: (limit = 12) => api.get(`/reviews/latest?limit=${limit}`),
+  getReviewInvite: (token) => api.get(`/reviews/invite/${token}`),
+  createReview: (data) => api.post('/reviews', data),
+  updateReview: (id, data) => api.put(`/reviews/${id}`, data),
+  getMyReviews: () => api.get('/reviews/my'),
+  updateProfile: (data) => api.put('/auth/me', data),
+  getMe: () => api.get('/auth/me'),
 }
 
 export { ApiError }
