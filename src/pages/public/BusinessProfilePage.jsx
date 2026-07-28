@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import StarRating from '../../components/common/StarRating'
 import ReviewCard from '../../components/review/ReviewCard'
 import RatingDistribution from '../../components/review/RatingDistribution'
+import AiReviewSummaryCard from '../../components/review/AiReviewSummaryCard'
 import Badge from '../../components/common/Badge'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
@@ -13,6 +14,8 @@ export default function BusinessProfilePage() {
   const { isAuthenticated, isCustomer } = useAuth()
   const [business, setBusiness] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [aiSummary, setAiSummary] = useState(null)
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
   const [myReviewId, setMyReviewId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -39,15 +42,21 @@ export default function BusinessProfilePage() {
     setLogoFailed(false)
     setSelectedStars([])
     setMyReviewId(null)
+    setAiSummary(null)
+    setAiSummaryLoading(true)
 
     ;(async () => {
       try {
         const profile = await publicApi.getBusiness(id)
         if (!active) return
         setBusiness(profile)
-        const reviewData = await publicApi.getBusinessReviews(profile.id)
+        const [reviewData, summary] = await Promise.all([
+          publicApi.getBusinessReviews(profile.id),
+          publicApi.getBusinessReviewSummary(profile.id).catch(() => null),
+        ])
         if (!active) return
         setReviews(reviewData.reviews || [])
+        setAiSummary(summary)
 
         if (isAuthenticated && isCustomer) {
           try {
@@ -67,7 +76,10 @@ export default function BusinessProfilePage() {
         if (!active) return
         setError(err.message || 'Business not found')
       } finally {
-        if (active) setLoading(false)
+        if (active) {
+          setLoading(false)
+          setAiSummaryLoading(false)
+        }
       }
     })()
 
@@ -153,6 +165,10 @@ export default function BusinessProfilePage() {
               {business.description || 'This business has not added a description yet.'}
             </p>
 
+            <div className="mt-6">
+              <AiReviewSummaryCard summary={aiSummary} loading={aiSummaryLoading} />
+            </div>
+
             <div className="mt-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold text-ink">Customer reviews</h2>
@@ -186,6 +202,7 @@ export default function BusinessProfilePage() {
                       review={{
                         ...review,
                         author: review.author_name,
+                        authorAvatar: resolveMediaUrl(review.author_avatar),
                         date: review.created_at ? new Date(review.created_at).toLocaleDateString() : '',
                         reply: review.business_reply
                           ? {

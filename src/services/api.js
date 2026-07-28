@@ -9,10 +9,11 @@ class ApiError extends Error {
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token')
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
@@ -35,6 +36,7 @@ export const api = {
   put: (endpoint, data) => request(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
   patch: (endpoint, data) => request(endpoint, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
+  upload: (endpoint, formData) => request(endpoint, { method: 'POST', body: formData }),
 }
 
 export const publicApi = {
@@ -51,6 +53,7 @@ export const publicApi = {
     return api.get(`/businesses/search${qs ? `?${qs}` : ''}`)
   },
   getBusiness: (idOrSlug) => api.get(`/businesses/${idOrSlug}`),
+  getBusinessReviewSummary: (idOrSlug) => api.get(`/businesses/${idOrSlug}/review-summary`),
   getCategories: () => api.get('/businesses/categories'),
   getBusinessReviews: (businessId, limit = 20) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),
@@ -61,6 +64,12 @@ export const publicApi = {
   getMyReviews: () => api.get('/reviews/my'),
   updateProfile: (data) => api.put('/auth/me', data),
   getMe: () => api.get('/auth/me'),
+  uploadAvatar: (file) => {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    return api.upload('/auth/me/avatar', formData)
+  },
+  removeAvatar: () => api.delete('/auth/me/avatar'),
 }
 
 export { ApiError }

@@ -14,7 +14,7 @@ const footerLinks = {
   ],
   Support: [
     { to: '/contact', label: 'Contact Us' },
-    { to: '/login', label: 'Help Center' },
+    { to: '/review-tips', label: 'Review tips' },
   ],
 }
 

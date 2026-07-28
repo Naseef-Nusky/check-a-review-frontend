@@ -18,18 +18,24 @@ function Stars({ rating }) {
 }
 
 function MarqueeCard({ item }) {
-  const href = `/businesses/${item.slug || item.businessId || ''}`
+  const author = item.author || item.author_name || 'Customer'
+  const businessName = item.business || item.business_name || 'Business'
+  const href = `/businesses/${item.slug || item.businessId || item.business_slug || ''}`
 
   return (
     <Link to={href} className="review-marquee-card block transition hover:border-primary-200 hover:shadow-sm">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-50 text-xs font-semibold text-primary-700">
-            {(item.author || 'C').charAt(0)}
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-semibold text-primary-700">
+            {author.charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-900">{item.author}</p>
-            <p className="truncate text-[11px] text-slate-500">{item.business}</p>
+            <p className="truncate text-sm font-semibold text-slate-900" title={author}>
+              {author}
+            </p>
+            <p className="truncate text-[11px] text-slate-500" title={businessName}>
+              reviewed {businessName}
+            </p>
           </div>
         </div>
         <Stars rating={item.rating} />

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import ReviewCard from '../../components/review/ReviewCard'
 import PageHeader from '../../components/common/PageHeader'
+import HomeReviewCard from '../../components/review/HomeReviewCard'
 import { publicApi } from '../../services/api'
 
 export default function LatestReviewsPage() {
@@ -16,7 +15,31 @@ export default function LatestReviewsPage() {
       .getLatestReviews(24)
       .then((data) => {
         if (!active) return
-        setReviews(data.reviews || [])
+        const mapped = (data.reviews || []).map((review) => ({
+          id: review.id,
+          rating: review.rating,
+          title: review.title,
+          content: review.content || review.title,
+          author: review.author_name || review.author || 'Customer',
+          author_name: review.author_name || review.author || 'Customer',
+          authorAvatar: review.author_avatar || review.authorAvatar || '',
+          date: review.created_at ? new Date(review.created_at).toLocaleDateString() : '',
+          business_name: review.business_name,
+          business_slug: review.business_slug,
+          business_id: review.business_id,
+          business_category: review.business_category,
+          business_website: review.business_website,
+          business_logo: review.business_logo,
+          business: {
+            id: review.business_id,
+            name: review.business_name || 'Business',
+            slug: review.business_slug,
+            website: review.business_website,
+            category: review.business_category,
+            logo: review.business_logo,
+          },
+        }))
+        setReviews(mapped)
       })
       .catch((err) => {
         if (!active) return
@@ -34,7 +57,7 @@ export default function LatestReviewsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <PageHeader
         title="Latest Reviews"
-        description="Recently published reviews from verified customers"
+        description="Recently published customer reviews"
       />
 
       {loading && <p className="mt-8 text-sm text-ink-muted">Loading reviews...</p>}
@@ -47,34 +70,10 @@ export default function LatestReviewsPage() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {reviews.map((review) => (
-          <div key={review.id} className="space-y-2">
-            <ReviewCard
-              review={{
-                ...review,
-                author: review.author_name,
-                date: review.created_at ? new Date(review.created_at).toLocaleDateString() : '',
-                reply: review.business_reply
-                  ? {
-                      content: review.business_reply,
-                      author: review.business_name,
-                      date: review.business_reply_at
-                        ? new Date(review.business_reply_at).toLocaleDateString()
-                        : '',
-                    }
-                  : null,
-              }}
-              businessName={review.business_name}
-            />
-            {review.business_slug && (
-              <Link
-                to={`/businesses/${review.business_slug}`}
-                className="inline-block text-sm font-medium text-primary-700 hover:text-primary-800"
-              >
-                View {review.business_name} →
-              </Link>
-            )}
+          <div key={review.id} className="h-full">
+            <HomeReviewCard review={review} />
           </div>
         ))}
       </div>

@@ -23,7 +23,7 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="section-kicker">Community</p>
-            <h2 className="section-title mt-2">Recent reviews</h2>
+            <h2 className="section-title mt-2">Latest reviews</h2>
           </div>
 
           <div className="flex items-center gap-2">
@@ -58,9 +58,11 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
             No published reviews yet. Be the first to share feedback on a business.
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {visibleReviews.map((review) => (
-              <HomeReviewCard key={review.id} review={review} />
+              <div key={review.id} className="h-full">
+                <HomeReviewCard review={review} />
+              </div>
             ))}
           </div>
         )}

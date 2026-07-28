@@ -122,8 +122,8 @@ export default function EditReviewPage() {
       const status = result?.review?.status || 'pending'
       setSuccess(
         status === 'published'
-          ? 'Your review was updated and is live.'
-          : 'Your review was updated and is being checked again.',
+          ? 'Your updated review passed our checks and is live.'
+          : 'Your review was updated and is being processed again. It may take a few minutes before it goes live.',
       )
 
       setTimeout(() => navigate('/users/reviews'), 1200)
@@ -257,7 +257,7 @@ export default function EditReviewPage() {
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
             <div className="flex gap-3">
               <Shield className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
-              <p>Edited reviews may be checked again before they stay live.</p>
+              <p>Edited reviews re-enter processing and may take a few minutes before they stay live.</p>
             </div>
           </div>
 

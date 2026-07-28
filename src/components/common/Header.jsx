@@ -2,11 +2,12 @@ import { Link, NavLink } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Settings, User } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
-import { ADMIN_CRM_URL, BUSINESS_PORTAL_URL } from '../../utils/constants'
+import { ADMIN_CRM_URL, BUSINESS_PORTAL_URL, resolveMediaUrl } from '../../utils/constants'
 import { SAMPLE_NOTIFICATIONS } from '../../data/sampleNotifications'
 import Button from './Button'
 import MobileMenuButton from './MobileMenuButton'
 import NotificationPanel, { NotificationBell } from './NotificationPanel'
+import ProfileAvatar from './ProfileAvatar'
 
 const navLinks = [
   { to: '/search', label: 'Find Businesses' },
@@ -15,17 +16,11 @@ const navLinks = [
   { to: '/contact', label: 'Contact' },
 ]
 
-function getInitials(name = '') {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return 'U'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-}
-
 function ProfileMenu({ user, isAdmin, logout }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
   const isUserAccount = !isAdmin && user?.role !== 'business'
+  const avatarSrc = resolveMediaUrl(user?.avatar_url)
 
   useEffect(() => {
     if (!open) return undefined
@@ -63,9 +58,7 @@ function ProfileMenu({ user, isAdmin, logout }) {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500 text-xs font-semibold text-white">
-          {getInitials(user?.name)}
-        </span>
+        <ProfileAvatar name={user?.name || 'User'} src={avatarSrc} size="sm" className="ring-0" />
         <span className="hidden max-w-[9rem] truncate text-sm font-medium text-white lg:inline">
           {user?.name || 'User'}
         </span>
@@ -195,13 +188,20 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="ghost" size="sm" className="text-slate-300 hover:bg-white/10 hover:text-white">
-                    Log in
-                  </Button>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/15"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center rounded-full bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
+                >
+                  Sign up
                 </Link>
                 <a href={BUSINESS_PORTAL_URL}>
-                  <Button size="sm" className="rounded-full bg-primary-500 hover:bg-primary-600">
+                  <Button size="sm" className="rounded-full bg-white/10 text-white hover:bg-white/15">
                     For businesses
                   </Button>
                 </a>
@@ -216,18 +216,18 @@ export default function Header() {
                 {isUserAccount ? (
                   <Link
                     to="/users/settings"
-                    className="mr-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary-500 text-xs font-semibold text-white"
+                    className="mr-1"
                     aria-label="Open settings"
                   >
-                    {getInitials(user?.name)}
+                    <ProfileAvatar name={user?.name || 'User'} src={resolveMediaUrl(user?.avatar_url)} size="sm" />
                   </Link>
                 ) : (
                   <a
                     href={isAdmin ? ADMIN_CRM_URL : BUSINESS_PORTAL_URL}
-                    className="mr-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary-500 text-xs font-semibold text-white"
+                    className="mr-1"
                     aria-label="Open profile"
                   >
-                    {getInitials(user?.name)}
+                    <ProfileAvatar name={user?.name || 'User'} src={resolveMediaUrl(user?.avatar_url)} size="sm" />
                   </a>
                 )}
               </>
@@ -302,8 +302,19 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-slate-200">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-center text-sm font-semibold text-white"
+                  >
                     Log in
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl bg-primary-500 px-4 py-3 text-center text-sm font-semibold text-white"
+                  >
+                    Sign up
                   </Link>
                   <a href={BUSINESS_PORTAL_URL} onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-primary-300">
                     For businesses

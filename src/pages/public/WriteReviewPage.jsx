@@ -141,8 +141,8 @@ export default function WriteReviewPage() {
       const status = result?.review?.status || 'pending'
       setSuccess(
         status === 'published'
-          ? 'Thanks! Your review has been published.'
-          : 'Thanks! Your review was submitted and is being checked before it goes live.',
+          ? 'Thanks! Your review passed our checks and is now live.'
+          : 'Thanks! Your review was submitted and is being processed. Most reviews go live within a few minutes after automated checks.',
       )
 
       setTimeout(() => {
@@ -244,7 +244,10 @@ export default function WriteReviewPage() {
             </div>
             {showTip ? (
               <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                Mention what happened, what went well, and what could improve. Keep it honest and specific.
+                Mention what happened, what went well, and what could improve. Keep it honest and specific.{' '}
+                <Link to="/review-tips" className="font-semibold underline underline-offset-2 hover:text-amber-950">
+                  See all 8 tips
+                </Link>
               </div>
             ) : null}
             <textarea
@@ -279,9 +282,13 @@ export default function WriteReviewPage() {
               </div>
             </div>
 
-            <a href="#" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
-              Read our Guidelines for Reviewers
-            </a>
+            <Link to="/review-tips" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
+              Read our tips for writing great reviews
+            </Link>
+            <p className="mt-3 text-xs leading-relaxed text-ink-muted">
+              After you submit, your review enters a processing stage. We check for spam, guideline issues, and duplicates.
+              Most reviews go live within a few minutes; flagged ones may take longer for manual review.
+            </p>
           </div>
 
           <div>

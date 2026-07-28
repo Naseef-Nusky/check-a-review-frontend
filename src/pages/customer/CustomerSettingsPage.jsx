@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
+import ProfileAvatar from '../../components/common/ProfileAvatar'
+import { resolveMediaUrl } from '../../utils/constants'
 
 const COUNTRIES = [
   'Sri Lanka',
@@ -42,15 +44,9 @@ function loadPrefs(userId) {
   }
 }
 
-function getInitials(name = '') {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return 'U'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-}
-
 export default function CustomerSettingsPage() {
   const { user, login, logout } = useAuth()
+  const fileInputRef = useRef(null)
   const saved = useMemo(() => loadPrefs(user?.id), [user?.id])
 
   const [form, setForm] = useState({
@@ -63,8 +59,10 @@ export default function CustomerSettingsPage() {
     const defaults = Object.fromEntries(EMAIL_PREFS.map((item) => [item.key, true]))
     return { ...defaults, ...(saved?.emailPrefs || {}) }
   })
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '')
   const [reviewCount, setReviewCount] = useState(0)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -74,6 +72,7 @@ export default function CustomerSettingsPage() {
       name: user?.name || '',
       email: user?.email || '',
     }))
+    setAvatarUrl(user?.avatar_url || '')
   }, [user])
 
   useEffect(() => {
@@ -93,7 +92,50 @@ export default function CustomerSettingsPage() {
     }
   }, [])
 
+  const syncUser = (updated) => {
+    const token = localStorage.getItem('token')
+    const next = { ...user, ...updated }
+    login(next, token)
+    setAvatarUrl(next.avatar_url || '')
+  }
+
   const updateField = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
+
+  const handleUploadClick = () => fileInputRef.current?.click()
+
+  const handleAvatarSelected = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    setUploading(true)
+    setError('')
+    setMessage('')
+    try {
+      const updated = await publicApi.uploadAvatar(file)
+      syncUser(updated)
+      setMessage('Profile picture updated.')
+    } catch (err) {
+      setError(err.message || 'Failed to upload profile picture')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemoveAvatar = async () => {
+    setUploading(true)
+    setError('')
+    setMessage('')
+    try {
+      const updated = await publicApi.removeAvatar()
+      syncUser(updated)
+      setMessage('Profile picture removed. Showing your name initials.')
+    } catch (err) {
+      setError(err.message || 'Failed to remove profile picture')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleSave = async (e) => {
     e.preventDefault()
@@ -102,8 +144,7 @@ export default function CustomerSettingsPage() {
     setMessage('')
     try {
       const updated = await publicApi.updateProfile({ name: form.name.trim() })
-      const token = localStorage.getItem('token')
-      login({ ...user, ...updated }, token)
+      syncUser(updated)
       localStorage.setItem(
         prefsKey(user?.id),
         JSON.stringify({
@@ -120,16 +161,17 @@ export default function CustomerSettingsPage() {
     }
   }
 
+  const displayName = form.name || user?.name || 'User'
+  const avatarSrc = resolveMediaUrl(avatarUrl)
+
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
         <div className="flex flex-col gap-6 px-6 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-500 text-2xl font-semibold text-white">
-              {getInitials(user?.name)}
-            </div>
+            <ProfileAvatar name={displayName} src={avatarSrc} size="xl" />
             <div>
-              <h1 className="text-2xl font-semibold text-ink">{user?.name || 'User'}</h1>
+              <h1 className="text-2xl font-semibold text-ink">{displayName}</h1>
               <p className="mt-1 text-sm text-ink-muted">{user?.email}</p>
             </div>
           </div>
@@ -154,7 +196,7 @@ export default function CustomerSettingsPage() {
         <div className="space-y-6">
           <form onSubmit={handleSave} className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
             <h2 className="text-xl font-semibold text-ink">Personal settings</h2>
-            <p className="mt-1 text-sm text-ink-muted">Update your profile details and preferences.</p>
+            <p className="mt-1 text-sm text-ink-muted">Update your profile picture, name, and preferences.</p>
 
             {error && (
               <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
@@ -164,15 +206,27 @@ export default function CustomerSettingsPage() {
             )}
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-700">
-                {getInitials(form.name)}
-              </div>
-              <Button type="button" variant="secondary" disabled>
-                Upload a new profile picture
+              <ProfileAvatar name={displayName} src={avatarSrc} size="lg" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarSelected}
+              />
+              <Button type="button" variant="secondary" onClick={handleUploadClick} disabled={uploading || saving}>
+                {uploading ? 'Uploading...' : avatarUrl ? 'Change profile picture' : 'Upload a profile picture'}
               </Button>
-              <button type="button" className="text-sm font-medium text-slate-500 hover:text-slate-800" disabled>
-                Remove my picture
-              </button>
+              {avatarUrl ? (
+                <button
+                  type="button"
+                  className="text-sm font-medium text-slate-500 hover:text-slate-800 disabled:opacity-50"
+                  onClick={handleRemoveAvatar}
+                  disabled={uploading || saving}
+                >
+                  Remove my picture
+                </button>
+              ) : null}
             </div>
 
             <div className="mt-6 space-y-4">
@@ -202,7 +256,7 @@ export default function CustomerSettingsPage() {
               </div>
             </div>
 
-            <Button type="submit" className="mt-6 rounded-full" disabled={saving}>
+            <Button type="submit" className="mt-6 rounded-full" disabled={saving || uploading}>
               {saving ? 'Saving...' : 'Save information'}
             </Button>
           </form>

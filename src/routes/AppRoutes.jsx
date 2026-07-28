@@ -13,6 +13,7 @@ import ReviewInvitePage from '../pages/public/ReviewInvitePage'
 import CategoriesPage from '../pages/public/CategoriesPage'
 import LatestReviewsPage from '../pages/public/LatestReviewsPage'
 import ContactPage from '../pages/public/ContactPage'
+import ReviewTipsPage from '../pages/public/ReviewTipsPage'
 
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
@@ -48,6 +49,7 @@ export default function AppRoutes() {
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="reviews" element={<LatestReviewsPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="review-tips" element={<ReviewTipsPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />

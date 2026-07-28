@@ -22,17 +22,18 @@ function getAvatarTone(name = '') {
   return avatarTones[code % avatarTones.length]
 }
 
-function getProfileImageUrl(name, src) {
-  if (src) return src
-  return `https://i.pravatar.cc/150?u=${encodeURIComponent(name || 'anonymous')}`
-}
-
 const sizeClasses = {
   sm: 'h-8 w-8 text-xs',
   md: 'h-10 w-10 text-sm',
   lg: 'h-11 w-11 text-sm',
+  xl: 'h-20 w-20 text-2xl',
 }
 
+/**
+ * Profile icon rules:
+ * 1. Uploaded/profile image if provided
+ * 2. Otherwise name initials
+ */
 export default function ProfileAvatar({
   name = 'Anonymous',
   src,
@@ -45,9 +46,9 @@ export default function ProfileAvatar({
   const tone = getAvatarTone(name)
   const sizeClass = sizeClasses[size] || sizeClasses.md
   const radius = rounded === 'xl' ? 'rounded-xl' : 'rounded-full'
-  const imageSrc = getProfileImageUrl(name, src)
+  const imageSrc = src && !failed ? src : ''
 
-  if (!failed) {
+  if (imageSrc) {
     return (
       <img
         src={imageSrc}
@@ -63,6 +64,7 @@ export default function ProfileAvatar({
     <div
       className={`flex ${sizeClass} ${radius} shrink-0 items-center justify-center font-semibold ${tone} ${className}`}
       aria-hidden="true"
+      title={name}
     >
       {initials}
     </div>

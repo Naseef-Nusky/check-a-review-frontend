@@ -12,6 +12,13 @@ const statusTone = {
   [REVIEW_STATUS.REPORTED]: 'warning',
 }
 
+const statusLabel = {
+  [REVIEW_STATUS.PENDING]: 'Processing',
+  [REVIEW_STATUS.PUBLISHED]: 'Published',
+  [REVIEW_STATUS.REJECTED]: 'Not published',
+  [REVIEW_STATUS.REPORTED]: 'Reported',
+}
+
 export default function ReviewCard({
   review,
   showStatus = false,
@@ -62,7 +69,7 @@ export default function ReviewCard({
           </div>
           {showStatus && review.status && (
             <Badge tone={statusTone[review.status] || 'default'} className="capitalize">
-              {review.status}
+              {statusLabel[review.status] || review.status}
             </Badge>
           )}
         </div>
@@ -100,7 +107,7 @@ export default function ReviewCard({
               {review.verified && <Badge tone="success">Verified</Badge>}
               {showStatus && review.status && (
                 <Badge tone={statusTone[review.status] || 'default'} className="capitalize">
-                  {review.status}
+                  {statusLabel[review.status] || review.status}
                 </Badge>
               )}
             </div>
