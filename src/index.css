@@ -212,16 +212,22 @@
 .review-marquee-track {
   display: flex;
   width: max-content;
-  gap: 1rem;
-  padding-inline: 0.5rem;
+  will-change: transform;
+}
+
+/* Spacing lives on the card rather than as a flex gap so one copy of the strip is
+   exactly its own width, which keeps the loop from drifting out of alignment. */
+.review-marquee-set {
+  display: flex;
+  flex-shrink: 0;
 }
 
 .review-marquee-left {
-  animation: review-marquee-left 42s linear infinite;
+  animation: review-marquee-scroll var(--marquee-duration, 42s) linear infinite;
 }
 
 .review-marquee-right {
-  animation: review-marquee-right 48s linear infinite;
+  animation: review-marquee-scroll var(--marquee-duration, 42s) linear infinite reverse;
 }
 
 .review-marquee-row:hover .review-marquee-track {
@@ -231,6 +237,7 @@
 .review-marquee-card {
   width: min(280px, 78vw);
   flex-shrink: 0;
+  margin-right: 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
   background: #fff;
@@ -238,21 +245,12 @@
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
 
-@keyframes review-marquee-left {
+@keyframes review-marquee-scroll {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes review-marquee-right {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
+    transform: translateX(var(--marquee-shift, -50%));
   }
 }
 

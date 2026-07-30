@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom'
 import { APP_NAME, BUSINESS_PORTAL_URL } from '../../utils/constants'
 
 const footerLinks = {
+  Company: [
+    { to: '/about', label: 'About us' },
+    { to: '/trust-centre', label: 'Trust Centre' },
+    { to: '/contact', label: 'Contact Us' },
+  ],
   Platform: [
     { to: '/search', label: 'Find Businesses' },
     { to: '/categories', label: 'Categories' },
@@ -13,7 +18,9 @@ const footerLinks = {
     { to: '/contact', label: 'Contact Sales' },
   ],
   Support: [
-    { to: '/contact', label: 'Contact Us' },
+    { to: '/help', label: 'Help Center' },
+    { to: '/help/reviewers', label: 'For reviewers' },
+    { to: '/help/businesses', label: 'For businesses' },
     { to: '/review-tips', label: 'Review tips' },
   ],
 }

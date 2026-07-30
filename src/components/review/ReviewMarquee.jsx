@@ -1,5 +1,9 @@
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Star } from 'lucide-react'
+
+/** Pixels the strip travels per second, kept constant however many copies are rendered. */
+const SCROLL_SPEED = 55
 
 function Stars({ rating }) {
   const safe = Math.max(0, Math.min(5, Number(rating) || 0))
@@ -74,8 +78,6 @@ export default function ReviewMarquee({ reviews = [], loading = false }) {
     )
   }
 
-  const loop = reviews.length === 1 ? [...reviews, ...reviews, ...reviews, ...reviews] : [...reviews, ...reviews]
-
   return (
     <section className="review-marquee border-b border-border bg-white py-8" aria-label="Recent customer feedback">
       <div className="mb-5 px-4 text-center sm:px-6">
@@ -83,13 +85,68 @@ export default function ReviewMarquee({ reviews = [], loading = false }) {
           Live from the community
         </p>
       </div>
-      <div className="review-marquee-row">
-        <div className="review-marquee-track review-marquee-left">
-          {loop.map((item, index) => (
-            <MarqueeCard key={`${item.id}-${index}`} item={item} />
-          ))}
-        </div>
-      </div>
+      <MarqueeTrack reviews={reviews} />
     </section>
+  )
+}
+
+function MarqueeTrack({ reviews }) {
+  const rowRef = useRef(null)
+  const setRef = useRef(null)
+  // One extra copy beyond what fills the viewport guarantees the strip never runs out mid-scroll.
+  const [copies, setCopies] = useState(2)
+  const [duration, setDuration] = useState(0)
+
+  const measure = useCallback(() => {
+    const row = rowRef.current
+    const set = setRef.current
+    if (!row || !set) return
+
+    const setWidth = set.scrollWidth
+    if (!setWidth) return
+
+    setCopies(Math.max(2, Math.ceil(row.offsetWidth / setWidth) + 1))
+    setDuration(setWidth / SCROLL_SPEED)
+  }, [])
+
+  useLayoutEffect(() => {
+    measure()
+  }, [measure, reviews])
+
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', measure)
+      return () => window.removeEventListener('resize', measure)
+    }
+
+    const observer = new ResizeObserver(measure)
+    if (rowRef.current) observer.observe(rowRef.current)
+    if (setRef.current) observer.observe(setRef.current)
+    return () => observer.disconnect()
+  }, [measure])
+
+  return (
+    <div className="review-marquee-row" ref={rowRef}>
+      <div
+        className="review-marquee-track review-marquee-left"
+        style={{
+          '--marquee-shift': `${-100 / copies}%`,
+          '--marquee-duration': duration ? `${duration}s` : '42s',
+        }}
+      >
+        {Array.from({ length: copies }, (_, copyIndex) => (
+          <div
+            key={copyIndex}
+            className="review-marquee-set"
+            ref={copyIndex === 0 ? setRef : null}
+            aria-hidden={copyIndex > 0 ? 'true' : undefined}
+          >
+            {reviews.map((item, index) => (
+              <MarqueeCard key={`${item.id}-${index}`} item={item} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

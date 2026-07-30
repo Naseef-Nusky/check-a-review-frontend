@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, ShieldCheck, Star } from 'lucide-react'
 import SearchBar from '../../components/common/SearchBar'
 import BusinessCard from '../../components/business/BusinessCard'
 import RecentReviewsSection from '../../components/review/RecentReviewsSection'
@@ -13,9 +12,9 @@ import { BUSINESS_PORTAL_URL } from '../../utils/constants'
 import { publicApi } from '../../services/api'
 
 const stats = [
-  { label: 'Verified reviews', value: '50K+', icon: Star, detail: 'From real customers' },
-  { label: 'Active businesses', value: '10K+', icon: Building2, detail: 'Listed & growing' },
-  { label: 'Average trust score', value: '4.7', icon: ShieldCheck, detail: 'Out of 5.0' },
+  { label: 'Verified reviews', value: '50K+', detail: 'From real customers' },
+  { label: 'Active businesses', value: '10K+', detail: 'Listed & growing' },
+  { label: 'Average trust score', value: '4.7', detail: 'Out of 5.0' },
 ]
 
 function mapBusiness(business) {
@@ -120,34 +119,26 @@ export default function HomePage() {
 
       <ReviewMarquee reviews={marqueeReviews} loading={reviewsLoading} />
 
-      <section className="relative overflow-hidden border-b border-border bg-slate-50">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-70"
-          aria-hidden="true"
-          style={{
-            background:
-              'radial-gradient(ellipse at 20% 0%, rgb(255 64 129 / 0.08), transparent 45%), radial-gradient(ellipse at 80% 100%, rgb(15 23 42 / 0.04), transparent 40%)',
-          }}
-        />
-        <div className="relative mx-auto grid max-w-7xl divide-y divide-slate-200/80 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8">
-          {stats.map((stat) => {
-            const Icon = stat.icon
-            return (
+      <section className="border-b border-border bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-3 sm:gap-0">
+            {stats.map((stat, index) => (
               <div
                 key={stat.label}
-                className="group flex flex-col items-center px-4 py-12 text-center sm:py-14"
+                className={`flex items-start gap-4 sm:px-8 ${
+                  index > 0 ? 'sm:border-l sm:border-slate-200' : ''
+                }`}
               >
-                <span className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-primary-600 shadow-[0_1px_2px_rgb(15_23_42/0.06),0_8px_24px_rgb(255_64_129/0.12)] ring-1 ring-slate-200/80 transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_1px_2px_rgb(15_23_42/0.06),0_12px_28px_rgb(255_64_129/0.18)]">
-                  <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-                </span>
-                <p className="text-4xl font-semibold tracking-tight text-slate-900 tabular-nums sm:text-5xl">
-                  {stat.value}
-                </p>
-                <p className="mt-2 text-sm font-medium text-slate-800">{stat.label}</p>
-                <p className="mt-1 text-xs text-slate-500">{stat.detail}</p>
+                <div className="min-w-0">
+                  <p className="text-3xl font-semibold tracking-tight text-slate-900 tabular-nums sm:text-4xl">
+                    <span className="text-primary-500">{stat.value}</span>
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900">{stat.label}</p>
+                  <p className="mt-0.5 text-sm text-slate-500">{stat.detail}</p>
+                </div>
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
       </section>
 

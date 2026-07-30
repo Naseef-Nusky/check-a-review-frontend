@@ -14,6 +14,11 @@ import CategoriesPage from '../pages/public/CategoriesPage'
 import LatestReviewsPage from '../pages/public/LatestReviewsPage'
 import ContactPage from '../pages/public/ContactPage'
 import ReviewTipsPage from '../pages/public/ReviewTipsPage'
+import AboutUsPage from '../pages/public/AboutUsPage'
+import TrustCentrePage from '../pages/public/TrustCentrePage'
+import HelpCenterPage from '../pages/public/HelpCenterPage'
+import HelpReviewersPage from '../pages/public/HelpReviewersPage'
+import HelpBusinessesPage from '../pages/public/HelpBusinessesPage'
 
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
@@ -49,6 +54,11 @@ export default function AppRoutes() {
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="reviews" element={<LatestReviewsPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="about" element={<AboutUsPage />} />
+        <Route path="trust-centre" element={<TrustCentrePage />} />
+        <Route path="help" element={<HelpCenterPage />} />
+        <Route path="help/reviewers" element={<HelpReviewersPage />} />
+        <Route path="help/businesses" element={<HelpBusinessesPage />} />
         <Route path="review-tips" element={<ReviewTipsPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />

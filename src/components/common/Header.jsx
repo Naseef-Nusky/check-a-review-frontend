@@ -13,6 +13,7 @@ const navLinks = [
   { to: '/search', label: 'Find Businesses' },
   { to: '/categories', label: 'Categories' },
   { to: '/reviews', label: 'Latest Reviews' },
+  { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ]
 
