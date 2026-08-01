@@ -87,6 +87,10 @@ export default function LoginPage() {
       const { user, token } = await publicApi.login(email, password)
       finishLogin(user, token)
     } catch (err) {
+      if (err.code === 'EMAIL_NOT_VERIFIED') {
+        navigate(`/verify-email?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectTo)}`)
+        return
+      }
       setError(err.message || 'Login failed')
     } finally {
       setLoading(false)
@@ -270,20 +274,21 @@ export default function LoginPage() {
           <div className="mt-14">
             <h2 className="text-xl font-semibold text-slate-900">Are you a business?</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Set up your business account on Check A Review for free
+              Business and reviewer logins are separate. You can create a business account with the same email as
+              your reviewer account.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={`${BUSINESS_PORTAL_URL}/login`}
                 className="rounded-full bg-primary-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
               >
-                Log in
+                Business log in
               </a>
               <a
                 href={`${BUSINESS_PORTAL_URL}/setup`}
                 className="rounded-full border-2 border-primary-500 px-6 py-2.5 text-sm font-semibold text-primary-600 transition hover:bg-primary-50"
               >
-                Sign up
+                Create business account
               </a>
             </div>
           </div>

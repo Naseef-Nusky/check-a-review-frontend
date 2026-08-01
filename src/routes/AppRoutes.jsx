@@ -23,6 +23,7 @@ import HelpBusinessesPage from '../pages/public/HelpBusinessesPage'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
+import VerifyEmailPage from '../pages/auth/VerifyEmailPage'
 
 import CustomerDashboardPage from '../pages/customer/CustomerDashboardPage'
 import CustomerProfilePage from '../pages/customer/CustomerProfilePage'
@@ -62,6 +63,7 @@ export default function AppRoutes() {
         <Route path="review-tips" element={<ReviewTipsPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="verify-email" element={<VerifyEmailPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 

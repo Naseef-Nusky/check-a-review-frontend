@@ -1,9 +1,10 @@
 import { API_BASE_URL } from '../utils/constants'
 
 class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, code = null) {
     super(message)
     this.status = status
+    this.code = code
   }
 }
 
@@ -23,7 +24,7 @@ async function request(endpoint, options = {}) {
   const json = await response.json().catch(() => ({ message: 'Request failed' }))
 
   if (!response.ok) {
-    throw new ApiError(json.message || 'Request failed', response.status)
+    throw new ApiError(json.message || 'Request failed', response.status, json.code || null)
   }
 
   if (response.status === 204) return null
@@ -40,9 +41,11 @@ export const api = {
 }
 
 export const publicApi = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
+  login: (email, password) => api.post('/auth/login', { email, password, role: 'customer' }),
   loginWithGoogle: (credential) => api.post('/auth/google', { credential }),
-  register: (data) => api.post('/auth/register', data),
+  register: (data) => api.post('/auth/register', { ...data, role: data.role || 'customer' }),
+  verifyEmail: (email, code) => api.post('/auth/verify-email', { email, code, role: 'customer' }),
+  resendVerification: (email) => api.post('/auth/resend-verification', { email, role: 'customer' }),
   searchBusinesses: (params = {}) => {
     const query = new URLSearchParams()
     if (params.q) query.set('q', params.q)

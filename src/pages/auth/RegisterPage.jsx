@@ -43,16 +43,26 @@ export default function RegisterPage() {
     }
     setLoading(true)
     try {
-      const { user, token } = await publicApi.register({
+      const result = await publicApi.register({
         name: form.name,
         email: form.email,
         password: form.password,
         role: 'customer',
       })
-      login(user, token)
+      if (result.requiresEmailVerification) {
+        navigate(`/verify-email?email=${encodeURIComponent(form.email)}&redirect=${encodeURIComponent(redirectTo)}`)
+        return
+      }
+      login(result.user, result.token)
       navigate(redirectTo.startsWith('/') ? redirectTo : '/users')
     } catch (err) {
-      setError(err.message || 'Registration failed')
+      if (err.code === 'EMAIL_EXISTS' || /already registered|already exists/i.test(err.message || '')) {
+        setError(
+          `${err.message || 'Email already registered.'} If you already started signup, enter the verification code we emailed you.`,
+        )
+      } else {
+        setError(err.message || 'Registration failed')
+      }
     } finally {
       setLoading(false)
     }
@@ -74,7 +84,19 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               {error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error}
+                  <p>{error}</p>
+                  <p className="mt-2">
+                    <Link to="/login" className="font-medium underline underline-offset-2">
+                      Log in
+                    </Link>
+                    {' · '}
+                    <Link
+                      to={`/verify-email?email=${encodeURIComponent(form.email || '')}`}
+                      className="font-medium underline underline-offset-2"
+                    >
+                      Enter verification code
+                    </Link>
+                  </p>
                 </div>
               )}
               <Input
@@ -125,20 +147,21 @@ export default function RegisterPage() {
           <div className="mt-14">
             <h2 className="text-xl font-semibold text-slate-900">Are you a business?</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Set up your business account on Check A Review for free
+              Reviewer and business accounts stay separate. You can use the same email for both — create a free
+              business account whenever you are ready.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={`${BUSINESS_PORTAL_URL}/login`}
                 className="rounded-full bg-primary-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
               >
-                Log in
+                Business log in
               </a>
               <a
                 href={`${BUSINESS_PORTAL_URL}/setup`}
                 className="rounded-full border-2 border-primary-500 px-6 py-2.5 text-sm font-semibold text-primary-600 transition hover:bg-primary-50"
               >
-                Sign up
+                Create business account
               </a>
             </div>
           </div>
