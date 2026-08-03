@@ -3,7 +3,7 @@ import { MapPin, Share2, ThumbsUp } from 'lucide-react'
 import StarRating from '../common/StarRating'
 import Badge from '../common/Badge'
 import ProfileAvatar from '../common/ProfileAvatar'
-import { REVIEW_STATUS } from '../../utils/constants'
+import { REVIEW_STATUS, resolveMediaUrl } from '../../utils/constants'
 
 const statusTone = {
   [REVIEW_STATUS.PENDING]: 'warning',
@@ -24,12 +24,16 @@ export default function ReviewCard({
   showStatus = false,
   variant = 'compact',
   businessName,
+  businessLogo,
 }) {
   const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount || 0)
   const [markedHelpful, setMarkedHelpful] = useState(false)
 
   const author = review.author || 'Anonymous'
   const isDetailed = variant === 'detailed'
+  const replyLogoSrc = resolveMediaUrl(
+    review.reply?.avatar || review.businessLogo || businessLogo || '',
+  )
 
   const handleHelpful = () => {
     if (markedHelpful) {
@@ -169,10 +173,10 @@ export default function ReviewCard({
       {reply && (
         <div className="mt-5 rounded-2xl border border-border bg-slate-50 p-4 sm:p-5">
           <div className="flex items-start gap-3">
-            {reply.avatar || review.businessLogo ? (
+            {replyLogoSrc ? (
               <ProfileAvatar
                 name={reply.author || businessName || 'Business'}
-                src={reply.avatar || review.businessLogo}
+                src={replyLogoSrc}
                 size="sm"
                 rounded="xl"
               />

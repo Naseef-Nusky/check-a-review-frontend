@@ -215,6 +215,7 @@ export default function BusinessProfilePage() {
                           : null,
                       }}
                       businessName={business.name}
+                      businessLogo={business.logo_url}
                     />
                   ))
                 )}

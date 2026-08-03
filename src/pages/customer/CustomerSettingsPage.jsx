@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
 import ProfileAvatar from '../../components/common/ProfileAvatar'
 import { resolveMediaUrl } from '../../utils/constants'
+import { DEFAULT_LANGUAGE, LANGUAGES } from '../../utils/languages'
+import { applyGoogleTranslate, getSavedSiteLanguage } from '../../utils/googleTranslate'
 
 const COUNTRIES = [
   'Sri Lanka',
@@ -14,21 +16,6 @@ const COUNTRIES = [
   'Australia',
   'India',
   'United Arab Emirates',
-]
-
-const LANGUAGES = [
-  { value: 'en-US', label: 'English (United States)' },
-  { value: 'en-GB', label: 'English (United Kingdom)' },
-  { value: 'si-LK', label: 'Sinhala' },
-  { value: 'ta-LK', label: 'Tamil' },
-]
-
-const EMAIL_PREFS = [
-  { key: 'marketing', label: 'Marketing emails', hint: 'Tips, offers, and product news from Check A Review.' },
-  { key: 'recommendations', label: 'Personalized recommendations', hint: 'Businesses and categories based on your activity.' },
-  { key: 'newsletter', label: 'Newsletter', hint: 'Monthly roundup of reviews and consumer insights.' },
-  { key: 'milestones', label: 'Review milestones', hint: 'Celebrate when your reviews help other people.' },
-  { key: 'invitations', label: 'Review invitations', hint: 'Get reminders when businesses invite your feedback.' },
 ]
 
 function prefsKey(userId) {
@@ -46,6 +33,7 @@ function loadPrefs(userId) {
 
 export default function CustomerSettingsPage() {
   const { user, login, logout } = useAuth()
+  const navigate = useNavigate()
   const fileInputRef = useRef(null)
   const saved = useMemo(() => loadPrefs(user?.id), [user?.id])
 
@@ -53,16 +41,13 @@ export default function CustomerSettingsPage() {
     name: user?.name || '',
     email: user?.email || '',
     country: saved?.country || 'Sri Lanka',
-    language: saved?.language || 'en-US',
-  })
-  const [emailPrefs, setEmailPrefs] = useState(() => {
-    const defaults = Object.fromEntries(EMAIL_PREFS.map((item) => [item.key, true]))
-    return { ...defaults, ...(saved?.emailPrefs || {}) }
+    language: saved?.language || getSavedSiteLanguage() || DEFAULT_LANGUAGE,
   })
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '')
   const [reviewCount, setReviewCount] = useState(0)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -150,14 +135,37 @@ export default function CustomerSettingsPage() {
         JSON.stringify({
           country: form.country,
           language: form.language,
-          emailPrefs,
         }),
       )
-      setMessage('Your information has been saved.')
+      setMessage('Your information has been saved. Applying language…')
+      applyGoogleTranslate(form.language, { reload: true })
     } catch (err) {
       setError(err.message || 'Failed to save settings')
-    } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      'Delete your account permanently?\n\nThis removes your profile and reviews from Check A Review. This cannot be undone.',
+    )
+    if (!confirmed) return
+
+    setDeleting(true)
+    setError('')
+    setMessage('')
+    try {
+      await publicApi.deleteAccount()
+      try {
+        localStorage.removeItem(prefsKey(user?.id))
+      } catch {
+        /* ignore */
+      }
+      logout()
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err.message || 'Failed to delete account')
+      setDeleting(false)
     }
   }
 
@@ -192,8 +200,7 @@ export default function CustomerSettingsPage() {
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-6">
+      <div className="space-y-6">
           <form onSubmit={handleSave} className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
             <h2 className="text-xl font-semibold text-ink">Personal settings</h2>
             <p className="mt-1 text-sm text-ink-muted">Update your profile picture, name, and preferences.</p>
@@ -253,6 +260,9 @@ export default function CustomerSettingsPage() {
                     <option key={language.value} value={language.value}>{language.label}</option>
                   ))}
                 </select>
+                <p className="mt-1.5 text-xs text-ink-muted">
+                  Powered by Google Translate. The site will refresh after you save.
+                </p>
               </div>
             </div>
 
@@ -260,27 +270,6 @@ export default function CustomerSettingsPage() {
               {saving ? 'Saving...' : 'Save information'}
             </Button>
           </form>
-
-          <section className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
-            <h2 className="text-xl font-semibold text-ink">Email settings</h2>
-            <p className="mt-1 text-sm text-ink-muted">Choose which emails you want to receive.</p>
-            <div className="mt-6 space-y-4">
-              {EMAIL_PREFS.map((pref) => (
-                <label key={pref.key} className="flex items-start justify-between gap-4 rounded-2xl border border-border px-4 py-4">
-                  <span>
-                    <span className="block text-sm font-semibold text-ink">{pref.label}</span>
-                    <span className="mt-1 block text-sm text-ink-muted">{pref.hint}</span>
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(emailPrefs[pref.key])}
-                    onChange={(e) => setEmailPrefs((prev) => ({ ...prev, [pref.key]: e.target.checked }))}
-                    className="mt-1 h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
-                  />
-                </label>
-              ))}
-            </div>
-          </section>
 
           <section className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
             <h2 className="text-xl font-semibold text-ink">Log out everywhere</h2>
@@ -297,24 +286,16 @@ export default function CustomerSettingsPage() {
             <p className="mt-2 text-sm text-ink-muted">
               Permanently remove your profile and personal data from Check A Review.
             </p>
-            <Button type="button" variant="secondary" className="mt-5 rounded-full" disabled>
-              Delete my profile
+            <Button
+              type="button"
+              variant="secondary"
+              className="mt-5 rounded-full border-red-200 text-red-700 hover:bg-red-50"
+              onClick={handleDeleteAccount}
+              disabled={deleting || saving || uploading}
+            >
+              {deleting ? 'Deleting...' : 'Delete my profile'}
             </Button>
           </section>
-        </div>
-
-        <aside className="space-y-4">
-          <div className="rounded-3xl border border-border bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-ink">My Social Settings</h3>
-            <p className="mt-2 text-sm text-ink-muted">Connect social accounts to make sign-in easier.</p>
-            <Button type="button" variant="secondary" className="mt-4 w-full rounded-full" disabled>
-              Continue with Facebook
-            </Button>
-            <button type="button" className="mt-3 w-full text-left text-sm font-medium text-primary-700" disabled>
-              Disconnect Google profile
-            </button>
-          </div>
-        </aside>
       </div>
     </div>
   )

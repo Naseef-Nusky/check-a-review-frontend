@@ -5,6 +5,7 @@ import BusinessCard from '../../components/business/BusinessCard'
 import RecentReviewsSection from '../../components/review/RecentReviewsSection'
 import Button from '../../components/common/Button'
 import HeroBackground from '../../components/common/HeroBackground'
+import HomeStatsSection from '../../components/common/HomeStatsSection'
 import ReviewMarquee from '../../components/review/ReviewMarquee'
 import { getCategoryIcon } from '../../utils/categoryIcons'
 import { CategoryIcon } from '../../components/common/AppIcon'
@@ -12,9 +13,9 @@ import { BUSINESS_PORTAL_URL } from '../../utils/constants'
 import { publicApi } from '../../services/api'
 
 const stats = [
-  { label: 'Verified reviews', value: '50K+', detail: 'From real customers' },
-  { label: 'Active businesses', value: '10K+', detail: 'Listed & growing' },
-  { label: 'Average trust score', value: '4.7', detail: 'Out of 5.0' },
+  { label: 'Verified reviews', numeric: 50, suffix: 'K+', decimals: 0, detail: 'From real customers' },
+  { label: 'Active businesses', numeric: 10, suffix: 'K+', decimals: 0, detail: 'Listed & growing' },
+  { label: 'Average trust score', numeric: 4.7, suffix: '', decimals: 1, detail: 'Out of 5.0' },
 ]
 
 function mapBusiness(business) {
@@ -119,28 +120,7 @@ export default function HomePage() {
 
       <ReviewMarquee reviews={marqueeReviews} loading={reviewsLoading} />
 
-      <section className="border-b border-border bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-3 sm:gap-0">
-            {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={`flex items-start gap-4 sm:px-8 ${
-                  index > 0 ? 'sm:border-l sm:border-slate-200' : ''
-                }`}
-              >
-                <div className="min-w-0">
-                  <p className="text-3xl font-semibold tracking-tight text-slate-900 tabular-nums sm:text-4xl">
-                    <span className="text-primary-500">{stat.value}</span>
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">{stat.label}</p>
-                  <p className="mt-0.5 text-sm text-slate-500">{stat.detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomeStatsSection stats={stats} />
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">

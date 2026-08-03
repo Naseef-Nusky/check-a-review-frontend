@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import StarRating from '../common/StarRating'
 import { resolveMediaUrl } from '../../utils/constants'
@@ -34,6 +34,10 @@ export default function HomeReviewCard({ review }) {
   const logoSrc = resolveMediaUrl(business.logo)
   const body = review.content || review.title || ''
   const title = review.title || ''
+
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [logoSrc])
 
   return (
     <article className="card flex h-full min-h-[280px] flex-col p-5">
@@ -72,7 +76,7 @@ export default function HomeReviewCard({ review }) {
           <img
             src={logoSrc}
             alt=""
-            className="h-10 w-10 shrink-0 rounded-xl bg-white object-contain"
+            className="h-10 w-10 shrink-0 rounded-xl bg-slate-50 object-contain p-1 ring-1 ring-slate-200/80"
             loading="lazy"
             onError={() => setLogoFailed(true)}
           />

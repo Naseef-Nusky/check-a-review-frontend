@@ -18,8 +18,10 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
   const goNext = () => setPage((current) => Math.min(totalPages - 1, current + 1))
 
   return (
-    <section className="bg-slate-50 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="latest-reviews-section py-20">
+      <div className="latest-reviews-bg" aria-hidden="true" />
+      <div className="latest-reviews-overlay" aria-hidden="true" />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="section-kicker">Community</p>
@@ -34,7 +36,7 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
               type="button"
               onClick={goPrev}
               disabled={page === 0 || reviews.length === 0}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
               aria-label="Previous reviews"
             >
               <ChevronLeft className="h-5 w-5 stroke-[1.5]" strokeWidth={1.5} aria-hidden="true" />
@@ -43,7 +45,7 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
               type="button"
               onClick={goNext}
               disabled={page >= totalPages - 1 || reviews.length === 0}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
               aria-label="Next reviews"
             >
               <ChevronRight className="h-5 w-5 stroke-[1.5]" strokeWidth={1.5} aria-hidden="true" />
@@ -54,7 +56,7 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
         {loading ? (
           <p className="mt-8 text-sm text-ink-muted">Loading community reviews...</p>
         ) : reviews.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-border bg-white px-6 py-10 text-center text-sm text-ink-muted">
+          <div className="mt-8 rounded-2xl border border-border bg-white/90 px-6 py-10 text-center text-sm text-ink-muted backdrop-blur">
             No published reviews yet. Be the first to share feedback on a business.
           </div>
         ) : (

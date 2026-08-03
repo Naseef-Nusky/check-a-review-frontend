@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import StarRating from '../common/StarRating'
 import { resolveMediaUrl } from '../../utils/constants'
 
 export default function BusinessCard({ business }) {
-  const [logoFailed, setLogoFailed] = useState(false)
   const logoSrc = resolveMediaUrl(business.logo || business.logo_url)
+  const [logoFailed, setLogoFailed] = useState(false)
   const showLogo = Boolean(logoSrc) && !logoFailed
   const rating = Number(business.rating || business.average_rating || 0)
   const reviewCount = Number(business.reviewCount || business.review_count || 0)
+
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [logoSrc])
 
   return (
     <Link

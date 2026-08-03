@@ -73,6 +73,7 @@ export const publicApi = {
     return api.upload('/auth/me/avatar', formData)
   },
   removeAvatar: () => api.delete('/auth/me/avatar'),
+  deleteAccount: () => api.delete('/auth/me'),
 }
 
 export { ApiError }

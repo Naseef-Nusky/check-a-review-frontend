@@ -157,11 +157,99 @@
       radial-gradient(ellipse at center, rgb(11 18 32 / 0.35) 0%, rgb(11 18 32 / 0.55) 70%),
       linear-gradient(180deg, rgb(11 18 32 / 0.2) 0%, rgb(11 18 32 / 0.45) 100%);
   }
+
+  .latest-reviews-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .latest-reviews-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: #f1f5f9;
+    background-image: url("/latest-reviews-bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .latest-reviews-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      linear-gradient(180deg, rgb(248 250 252 / 0.88) 0%, rgb(248 250 252 / 0.92) 55%, rgb(248 250 252 / 0.96) 100%),
+      radial-gradient(ellipse at top right, rgb(255 64 129 / 0.08), transparent 45%);
+  }
+
+  .home-stats-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .home-stats-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: #0b1220;
+    background-image: url("/stats-bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transform: scale(1.08);
+    animation: home-stats-ken 18s ease-in-out infinite alternate;
+  }
+
+  .home-stats-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      linear-gradient(90deg, rgb(11 18 32 / 0.82) 0%, rgb(11 18 32 / 0.72) 50%, rgb(11 18 32 / 0.82) 100%),
+      radial-gradient(ellipse at top center, rgb(255 64 129 / 0.18), transparent 50%);
+  }
+
+  .home-stat-item {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--stat-delay, 0ms);
+  }
+
+  .home-stat-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes home-stats-ken {
+  from {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.16) translate3d(-1.5%, -1%, 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .notification-drawer {
     animation: none !important;
+  }
+
+  .home-stats-bg {
+    animation: none !important;
+    transform: scale(1.08);
+  }
+
+  .home-stat-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
@@ -259,4 +347,30 @@
   .review-marquee-right {
     animation: none !important;
   }
+}
+
+/* Hide Google Translate chrome; language is controlled from Settings */
+.google-translate-host {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-spinner-pos,
+.goog-logo-link,
+.goog-te-gadget {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.skiptranslate iframe {
+  visibility: hidden !important;
 }
