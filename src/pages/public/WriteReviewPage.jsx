@@ -180,7 +180,7 @@ export default function WriteReviewPage() {
               <img
                 src={resolveMediaUrl(business.logo_url)}
                 alt=""
-                className="h-full w-full object-contain p-1"
+                className="h-full w-full object-contain"
                 onError={() => setLogoFailed(true)}
               />
             ) : (

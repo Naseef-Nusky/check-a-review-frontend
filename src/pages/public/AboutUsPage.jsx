@@ -7,7 +7,6 @@ import {
   MessageCircle,
   Rocket,
   ShieldCheck,
-  Sparkles,
   Star,
   Users,
 } from 'lucide-react'
@@ -73,13 +72,18 @@ const stories = [
 export default function AboutUsPage() {
   return (
     <div>
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-primary-950 px-4 py-20 text-white sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden px-4 py-20 text-white sm:px-6 lg:px-8">
         <div
-          className="pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-0 bg-cover bg-center"
+          aria-hidden="true"
+          style={{ backgroundImage: 'url(/about-hero-bg.png)' }}
+        />
+        <div
+          className="pointer-events-none absolute inset-0"
           aria-hidden="true"
           style={{
             background:
-              'radial-gradient(ellipse at 15% 20%, rgb(255 64 129 / 0.35), transparent 45%), radial-gradient(ellipse at 85% 80%, rgb(255 255 255 / 0.08), transparent 40%)',
+              'linear-gradient(180deg, rgb(11 18 32 / 0.72) 0%, rgb(11 18 32 / 0.78) 55%, rgb(11 18 32 / 0.88) 100%), radial-gradient(ellipse at 15% 20%, rgb(255 64 129 / 0.28), transparent 45%)',
           }}
         />
         <div className="relative mx-auto max-w-4xl text-center">
@@ -126,17 +130,13 @@ export default function AboutUsPage() {
               Our team builds tools for review collection, moderation, replies, and insights — so trust is visible wherever people need it.
             </p>
           </div>
-          <div className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary-50 via-white to-slate-100 p-8 shadow-sm">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-500 text-white">
-              <Sparkles className="h-6 w-6" strokeWidth={1.75} />
-            </div>
-            <p className="mt-5 text-lg font-semibold text-slate-900">Trust in action</p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Real experiences. Clear ratings. Transparent moderation. That combination is how we keep the platform useful for both sides.
-            </p>
-            <Link to="/trust-centre" className="mt-6 inline-flex text-sm font-semibold text-primary-700 hover:text-primary-800">
-              Visit the Trust Centre →
-            </Link>
+          <div className="overflow-hidden rounded-3xl border border-border shadow-sm">
+            <img
+              src="/about-vision.png"
+              alt="Our team collaborating on building trust online"
+              className="aspect-[4/3] w-full object-cover"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -156,32 +156,42 @@ export default function AboutUsPage() {
       </section>
 
       <section className="border-b border-border bg-white px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <p className="section-kicker">What we do</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-            Built for customers and businesses
-          </h2>
-          <div className="mt-6 space-y-4 text-base leading-relaxed text-slate-600">
-            <p>
-              Anyone can leave a review when it is based on a real experience. Those reviews help millions of people find
-              trustworthy companies and buy with more confidence.
-            </p>
-            <p>
-              Reviews also help businesses earn trust — by listening, responding, understanding feedback, and improving
-              where it matters most.
-            </p>
-            <p>
-              Our mission is to strengthen trust between people and companies by making honest reviews easy to find and
-              hard to ignore.
-            </p>
-            <p>
-              We protect the integrity of the platform with automated checks, AI-assisted moderation, community guidelines,
-              and human review when needed. Learn more in our{' '}
-              <Link to="/trust-centre" className="font-semibold text-primary-700 hover:text-primary-800">
-                Trust Centre
-              </Link>
-              .
-            </p>
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="overflow-hidden rounded-3xl border border-border shadow-sm">
+            <img
+              src="/about-trust.png"
+              alt="Building trust through honest customer feedback"
+              className="aspect-[16/10] w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div className="max-w-3xl">
+            <p className="section-kicker">What we do</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
+              Built for customers and businesses
+            </h2>
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-slate-600">
+              <p>
+                Anyone can leave a review when it is based on a real experience. Those reviews help millions of people find
+                trustworthy companies and buy with more confidence.
+              </p>
+              <p>
+                Reviews also help businesses earn trust — by listening, responding, understanding feedback, and improving
+                where it matters most.
+              </p>
+              <p>
+                Our mission is to strengthen trust between people and companies by making honest reviews easy to find and
+                hard to ignore.
+              </p>
+              <p>
+                We protect the integrity of the platform with automated checks, AI-assisted moderation, community guidelines,
+                and human review when needed. Learn more in our{' '}
+                <Link to="/trust-centre" className="font-semibold text-primary-700 hover:text-primary-800">
+                  Trust Centre
+                </Link>
+                .
+              </p>
+            </div>
           </div>
         </div>
       </section>

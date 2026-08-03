@@ -76,7 +76,7 @@ export default function HomeReviewCard({ review }) {
           <img
             src={logoSrc}
             alt=""
-            className="h-10 w-10 shrink-0 rounded-xl bg-slate-50 object-contain p-1 ring-1 ring-slate-200/80"
+            className="h-10 w-10 shrink-0 rounded-xl bg-slate-50 object-contain ring-1 ring-slate-200/80"
             loading="lazy"
             onError={() => setLogoFailed(true)}
           />
