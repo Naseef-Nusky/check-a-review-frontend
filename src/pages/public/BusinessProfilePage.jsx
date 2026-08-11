@@ -161,11 +161,7 @@ export default function BusinessProfilePage() {
 
         <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[1.4fr_0.8fr]">
           <div>
-            <p className="text-sm leading-relaxed text-ink-muted">
-              {business.description || 'This business has not added a description yet.'}
-            </p>
-
-            <div className="mt-6">
+            <div>
               <AiReviewSummaryCard summary={aiSummary} loading={aiSummaryLoading} />
             </div>
 

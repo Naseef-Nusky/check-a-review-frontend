@@ -9,7 +9,7 @@ const payments = [
 export default function AdminPaymentsPage() {
   return (
     <div>
-      <PageHeader title="Payments" description="Stripe payment history and transactions" />
+      <PageHeader title="Payments" description="Square payment history and transactions" />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">

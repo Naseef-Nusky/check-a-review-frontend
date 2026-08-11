@@ -11,7 +11,7 @@ const plans = [
 export default function BusinessSubscriptionPage() {
   return (
     <div>
-      <PageHeader title="Subscription" description="Manage your plan and billing via Stripe" />
+      <PageHeader title="Subscription" description="Manage your plan and billing via Square" />
       <div className="grid gap-6 md:grid-cols-3">
         {plans.map((plan) => (
           <div
@@ -48,7 +48,7 @@ export default function BusinessSubscriptionPage() {
       </div>
       <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-gray-900">Payment History</h2>
-        <p className="mt-2 text-sm text-gray-500">Stripe payment history will appear here once connected.</p>
+        <p className="mt-2 text-sm text-gray-500">Square payment history will appear here once connected.</p>
       </div>
     </div>
   )
