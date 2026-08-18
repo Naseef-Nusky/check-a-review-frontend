@@ -66,15 +66,12 @@ export default function AdminSettingsPage() {
         </div>
         <div>
           <label htmlFor="emailProvider" className="block text-sm font-medium text-gray-700">Email Provider</label>
-          <select
+          <input
             id="emailProvider"
-            value={settings.emailProvider}
-            onChange={(e) => setSettings({ ...settings, emailProvider: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-          >
-            <option value="sendgrid">SendGrid</option>
-            <option value="resend">Resend</option>
-          </select>
+            value="SendGrid"
+            readOnly
+            className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-600"
+          />
         </div>
         <Button type="submit">Save Settings</Button>
       </form>
