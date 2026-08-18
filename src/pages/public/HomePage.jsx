@@ -106,7 +106,7 @@ export default function HomePage() {
         <HeroBackground />
         <div className="relative z-10 mx-auto max-w-5xl text-center">
           <p className="section-kicker text-primary-200">Customer trust, measured</p>
-          <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-6xl">
+          <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
             Find businesses you can trust with confidence.
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">

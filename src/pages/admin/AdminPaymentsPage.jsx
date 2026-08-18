@@ -1,9 +1,9 @@
 import PageHeader from '../../components/common/PageHeader'
 
 const payments = [
-  { id: 'pi_001', business: 'Tech Solutions Inc', amount: '$79.00', plan: 'Premium', date: 'Jul 1, 2026', status: 'Succeeded' },
-  { id: 'pi_002', business: 'Green Cafe', amount: '$29.00', plan: 'Starter', date: 'Jun 15, 2026', status: 'Succeeded' },
-  { id: 'pi_003', business: 'FitLife Gym', amount: '$79.00', plan: 'Premium', date: 'Jun 28, 2026', status: 'Succeeded' },
+  { id: 'sq_001', business: 'Tech Solutions Inc', amount: '$79.00', plan: 'Premium', date: 'Jul 1, 2026', status: 'Succeeded' },
+  { id: 'sq_002', business: 'Green Cafe', amount: '$29.00', plan: 'Starter', date: 'Jun 15, 2026', status: 'Succeeded' },
+  { id: 'sq_003', business: 'FitLife Gym', amount: '$79.00', plan: 'Premium', date: 'Jun 28, 2026', status: 'Succeeded' },
 ]
 
 export default function AdminPaymentsPage() {

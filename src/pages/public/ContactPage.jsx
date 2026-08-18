@@ -3,9 +3,10 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
+import { CONTACT_EMAIL } from '../../utils/constants'
 
 const contactItems = [
-  { label: 'Email', value: 'support@checkareview.com', icon: Mail },
+  { label: 'Email', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, icon: Mail },
   { label: 'Phone', value: '+1 (800) 123-4567', icon: Phone },
   { label: 'Office', value: '123 Review Street, New York, NY', icon: MapPin },
 ]
@@ -55,7 +56,13 @@ export default function ContactPage() {
                   </span>
                   <div>
                     <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</dt>
-                    <dd className="mt-1 text-sm text-ink">{item.value}</dd>
+                    <dd className="mt-1 text-sm text-ink">
+                      {item.href ? (
+                        <a href={item.href} className="hover:text-primary-600">{item.value}</a>
+                      ) : (
+                        item.value
+                      )}
+                    </dd>
                   </div>
                 </div>
               ))}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { APP_NAME, BUSINESS_PORTAL_URL } from '../../utils/constants'
+import { Mail } from 'lucide-react'
+import { APP_NAME, BUSINESS_PORTAL_URL, CONTACT_EMAIL } from '../../utils/constants'
 
 const footerLinks = {
   Company: [
@@ -37,6 +38,13 @@ export default function Footer() {
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-slate-400">
               Trusted reviews platform helping customers make informed decisions and businesses build reputation.
             </p>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-5 inline-flex items-center gap-2 text-sm text-slate-300 transition hover:text-white"
+            >
+              <Mail className="h-4 w-4" strokeWidth={1.5} />
+              {CONTACT_EMAIL}
+            </a>
           </div>
 
           {Object.entries(footerLinks).map(([title, links]) => (
@@ -61,8 +69,12 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-slate-800 pt-8 text-sm text-slate-500">
-          © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+        <div className="mt-12 flex flex-col gap-3 border-t border-slate-800 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+          <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+            <Mail className="h-4 w-4" strokeWidth={1.5} />
+            {CONTACT_EMAIL}
+          </a>
         </div>
       </div>
     </footer>

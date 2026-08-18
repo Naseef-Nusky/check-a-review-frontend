@@ -1,4 +1,5 @@
 export const APP_NAME = 'Check A Review'
+export const CONTACT_EMAIL = 'info@checkareview.com'
 
 export const USER_ROLES = {
   CUSTOMER: 'customer',
