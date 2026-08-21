@@ -268,7 +268,7 @@ export default function Header() {
                   </button>
                   {isAdmin ? (
                     <a href={ADMIN_CRM_URL} onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-slate-200">
-                      Admin CRM
+                      Admin
                     </a>
                   ) : user?.role === 'business' ? (
                     <a href={BUSINESS_PORTAL_URL} onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-slate-200">
