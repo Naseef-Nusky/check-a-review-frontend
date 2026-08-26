@@ -18,14 +18,6 @@ function GoogleIcon() {
   )
 }
 
-function FacebookIcon() {
-  return (
-    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M22 12.1C22 6.5 17.5 2 12 2S2 6.5 2 12.1c0 5 3.7 9.1 8.4 9.9v-7H8.1v-2.9h2.3V9.4c0-2.3 1.4-3.5 3.4-3.5.9 0 1.9.1 1.9.1v2.2h-1.1c-1.1 0-1.4.7-1.4 1.3v1.7h2.5l-.4 2.9h-2.1v7C18.3 21.2 22 17.1 22 12.1z" />
-    </svg>
-  )
-}
-
 function AppleIcon() {
   return (
     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -195,14 +187,6 @@ export default function LoginPage() {
                 >
                   <GoogleIcon />
                   {loading ? 'Connecting...' : 'Continue with Google'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSocial('Facebook')}
-                  className="flex w-full items-center justify-center gap-3 rounded-full bg-[#1877F2] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#166FE5]"
-                >
-                  <FacebookIcon />
-                  Continue with Facebook
                 </button>
                 <button
                   type="button"
