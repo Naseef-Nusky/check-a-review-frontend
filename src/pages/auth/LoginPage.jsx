@@ -47,12 +47,25 @@ function loadGoogleScript() {
   })
 }
 
+/** Sign in with Apple is shown only on iPhone / iPad / Mac. */
+function isAppleDevice() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  const platform = navigator.platform || ''
+  if (/iPhone|iPad|iPod/i.test(ua)) return true
+  if (/Macintosh|Mac OS X/i.test(ua)) return true
+  // iPadOS 13+ may report as MacIntel with touch
+  if (platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true
+  return false
+}
+
 export default function LoginPage() {
   const [mode, setMode] = useState('providers') // providers | email
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showAppleSignIn] = useState(() => isAppleDevice())
   const { login } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -188,14 +201,16 @@ export default function LoginPage() {
                   <GoogleIcon />
                   {loading ? 'Connecting...' : 'Continue with Google'}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleSocial('Apple')}
-                  className="flex w-full items-center justify-center gap-3 rounded-full bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
-                  <AppleIcon />
-                  Sign in with Apple
-                </button>
+                {showAppleSignIn && (
+                  <button
+                    type="button"
+                    onClick={() => handleSocial('Apple')}
+                    className="flex w-full items-center justify-center gap-3 rounded-full bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  >
+                    <AppleIcon />
+                    Sign in with Apple
+                  </button>
+                )}
 
                 <button
                   type="button"
