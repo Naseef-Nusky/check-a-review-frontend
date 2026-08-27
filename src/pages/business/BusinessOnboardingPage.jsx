@@ -344,8 +344,15 @@ export default function BusinessOnboardingPage() {
           </form>
 
           <p className="mt-10 max-w-xl text-xs leading-relaxed text-slate-400">
-            By continuing, you agree to our Terms of Service and Privacy Policy. We use your details to set up your
-            business profile and review collection tools.
+            By continuing, you agree to our{' '}
+            <Link to="/terms/business" className="text-slate-300 underline-offset-2 hover:text-white hover:underline">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="text-slate-300 underline-offset-2 hover:text-white hover:underline">
+              Privacy Policy
+            </Link>
+            . We use your details to set up your business profile and review collection tools.
           </p>
         </section>
 

@@ -24,13 +24,19 @@ const footerLinks = {
     { to: '/help/businesses', label: 'For businesses' },
     { to: '/review-tips', label: 'Review tips' },
   ],
+  Legal: [
+    { to: '/privacy', label: 'Privacy Policy' },
+    { to: '/terms', label: 'Terms for reviewers' },
+    { to: '/terms/business', label: 'Terms of Use & Sale for Businesses' },
+    { to: '/trust-centre', label: 'Trust Centre' },
+  ],
 }
 
 export default function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div>
             <Link to="/" className="inline-flex items-center">
               <img src="/logo-check-a-review.png" alt="Check A Review" className="h-8 w-auto object-contain" />
@@ -71,10 +77,18 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-slate-800 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
-          <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
-            <Mail className="h-4 w-4" strokeWidth={1.5} />
-            {CONTACT_EMAIL}
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link to="/privacy" className="text-slate-400 transition hover:text-white">
+              Privacy
+            </Link>
+            <Link to="/terms" className="text-slate-400 transition hover:text-white">
+              Terms
+            </Link>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+              <Mail className="h-4 w-4" strokeWidth={1.5} />
+              {CONTACT_EMAIL}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

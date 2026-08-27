@@ -19,6 +19,9 @@ import TrustCentrePage from '../pages/public/TrustCentrePage'
 import HelpCenterPage from '../pages/public/HelpCenterPage'
 import HelpReviewersPage from '../pages/public/HelpReviewersPage'
 import HelpBusinessesPage from '../pages/public/HelpBusinessesPage'
+import PrivacyPolicyPage from '../pages/public/PrivacyPolicyPage'
+import TermsConsumersPage from '../pages/public/TermsConsumersPage'
+import TermsBusinessPage from '../pages/public/TermsBusinessPage'
 
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
@@ -61,6 +64,9 @@ export default function AppRoutes() {
         <Route path="help/reviewers" element={<HelpReviewersPage />} />
         <Route path="help/businesses" element={<HelpBusinessesPage />} />
         <Route path="review-tips" element={<ReviewTipsPage />} />
+        <Route path="privacy" element={<PrivacyPolicyPage />} />
+        <Route path="terms" element={<TermsConsumersPage />} />
+        <Route path="terms/business" element={<TermsBusinessPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="verify-email" element={<VerifyEmailPage />} />

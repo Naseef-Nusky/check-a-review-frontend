@@ -30,7 +30,8 @@ const sections = [
     title: 'For reviewers',
     links: [
       { to: '/register', label: 'Create a customer account' },
-      { to: '/reviews', label: 'Latest reviews' },
+      { to: '/privacy', label: 'Privacy Policy' },
+      { to: '/terms', label: 'Terms of Use' },
       { to: '/contact', label: 'Get support' },
     ],
   },
@@ -38,7 +39,7 @@ const sections = [
     title: 'For businesses',
     links: [
       { href: `${BUSINESS_PORTAL_URL}/setup`, label: 'Register your business' },
-      { href: `${BUSINESS_PORTAL_URL}/login`, label: 'Business login' },
+      { to: '/terms/business', label: 'Business Terms' },
       { href: `${BUSINESS_PORTAL_URL}/pricing`, label: 'Plans & pricing' },
     ],
   },
