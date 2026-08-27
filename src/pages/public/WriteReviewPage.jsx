@@ -180,10 +180,10 @@ export default function WriteReviewPage() {
   }
 
   return (
-    <div className="min-h-[70vh] bg-[#f7f7f5]">
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center gap-4 rounded-2xl border border-border bg-white p-4 shadow-sm">
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-lg font-semibold text-slate-700">
+    <div className="min-h-[70vh] overflow-x-hidden bg-[#f7f7f5]">
+      <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mb-5 flex items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm sm:mb-8 sm:gap-4 sm:p-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-base font-semibold text-slate-700 sm:h-14 sm:w-14 sm:text-lg">
             {!logoFailed && business?.logo_url ? (
               <img
                 src={resolveMediaUrl(business.logo_url)}
@@ -195,21 +195,28 @@ export default function WriteReviewPage() {
               business?.name?.charAt(0) || 'B'
             )}
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-lg font-semibold text-slate-900">{business?.name}</p>
-            {websiteHost ? <p className="truncate text-sm text-slate-500">{websiteHost}</p> : null}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-base font-semibold text-slate-900 sm:text-lg">{business?.name}</p>
+            {websiteHost ? <p className="truncate text-xs text-slate-500 sm:text-sm">{websiteHost}</p> : null}
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 rounded-2xl border border-border bg-white p-4 shadow-sm sm:space-y-8 sm:rounded-3xl sm:p-8"
+        >
           {error ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700 sm:px-4">{error}</div>
           ) : null}
           {success ? (
-            <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{success}</div>
+            <div className="rounded-xl border border-green-200 bg-green-50 px-3 py-3 text-sm text-green-700 sm:px-4">{success}</div>
           ) : null}
 
-          <div className="flex justify-center gap-2" role="radiogroup" aria-label="Star rating">
+          <div
+            className="flex flex-wrap items-center justify-center gap-1 sm:gap-2"
+            role="radiogroup"
+            aria-label="Star rating"
+          >
             {Array.from({ length: 5 }, (_, index) => {
               const value = index + 1
               const active = value <= displayRating
@@ -220,13 +227,13 @@ export default function WriteReviewPage() {
                   role="radio"
                   aria-checked={rating === value}
                   aria-label={`${value} star${value > 1 ? 's' : ''}`}
-                  className="rounded-lg p-1 transition hover:scale-105"
+                  className="rounded-lg p-1.5 transition active:scale-95 sm:p-1 sm:hover:scale-105"
                   onMouseEnter={() => setHoverRating(value)}
                   onMouseLeave={() => setHoverRating(0)}
                   onClick={() => setRating(value)}
                 >
                   <Star
-                    className={`h-12 w-12 sm:h-14 sm:w-14 ${
+                    className={`h-10 w-10 sm:h-14 sm:w-14 ${
                       active ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200'
                     }`}
                     strokeWidth={1.5}
@@ -235,23 +242,26 @@ export default function WriteReviewPage() {
               )
             })}
           </div>
+          {!rating ? (
+            <p className="-mt-3 text-center text-xs text-slate-500 sm:text-sm">Tap a star to rate your experience</p>
+          ) : null}
 
           <div>
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <label htmlFor="content" className="text-base font-semibold text-slate-900">
+            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <label htmlFor="content" className="text-sm font-semibold text-slate-900 sm:text-base">
                 Tell us more about your experience
               </label>
               <button
                 type="button"
                 onClick={() => setShowTip((v) => !v)}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
               >
-                <Lightbulb className="h-4 w-4" />
+                <Lightbulb className="h-4 w-4 shrink-0" />
                 Want a tip?
               </button>
             </div>
             {showTip ? (
-              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-900 sm:px-4">
                 Mention what happened, what went well, and what could improve. Keep it honest and specific.{' '}
                 <Link to="/review-tips" className="font-semibold underline underline-offset-2 hover:text-amber-950">
                   See all 8 tips
@@ -260,11 +270,11 @@ export default function WriteReviewPage() {
             ) : null}
             <textarea
               id="content"
-              rows={7}
+              rows={6}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What did you like or dislike? What is this company doing well, or how can they improve? Remember to be honest, helpful, and constructive!"
-              className="input-field min-h-40 resize-y"
+              className="input-field min-h-32 w-full resize-y text-base sm:min-h-40"
             />
 
             <div className="mt-4">
@@ -277,7 +287,7 @@ export default function WriteReviewPage() {
                       key={tag}
                       type="button"
                       onClick={() => toggleTag(tag)}
-                      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                      className={`rounded-full border px-3 py-2 text-sm transition sm:py-1.5 ${
                         selected
                           ? 'border-primary-500 bg-primary-50 text-primary-700'
                           : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
@@ -300,7 +310,7 @@ export default function WriteReviewPage() {
           </div>
 
           <div>
-            <label htmlFor="title" className="mb-2 block text-base font-semibold text-slate-900">
+            <label htmlFor="title" className="mb-2 block text-sm font-semibold text-slate-900 sm:text-base">
               Give your review a title
             </label>
             <input
@@ -309,15 +319,18 @@ export default function WriteReviewPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What's important for people to know?"
-              className="input-field"
+              className="input-field w-full text-base"
               maxLength={120}
             />
           </div>
 
           <div>
-            <label htmlFor="experienceDate" className="mb-2 flex items-center gap-2 text-base font-semibold text-slate-900">
+            <label
+              htmlFor="experienceDate"
+              className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900 sm:text-base"
+            >
               Date of experience
-              <Info className="h-4 w-4 text-slate-400" />
+              <Info className="h-4 w-4 shrink-0 text-slate-400" />
             </label>
             <input
               id="experienceDate"
@@ -325,12 +338,12 @@ export default function WriteReviewPage() {
               value={experienceDate}
               max={todayDateValue()}
               onChange={(e) => setExperienceDate(e.target.value)}
-              className="input-field max-w-xs"
+              className="input-field w-full max-w-none text-base sm:max-w-xs"
             />
             <p className="mt-1.5 text-xs text-slate-500">Defaults to today. You can change it if needed.</p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600 sm:px-4 sm:py-4">
             <div className="flex gap-3">
               <Shield className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
               <p>
@@ -339,14 +352,18 @@ export default function WriteReviewPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between sm:border-0 sm:pt-0">
             <Link
               to={`/businesses/${business?.slug || id}`}
-              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+              className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-center text-sm font-medium text-slate-600 hover:text-slate-900 sm:min-h-0 sm:justify-start sm:px-0"
             >
               Cancel
             </Link>
-            <Button type="submit" className="rounded-full px-8" disabled={submitting || !!success}>
+            <Button
+              type="submit"
+              className="w-full rounded-full px-8 sm:w-auto"
+              disabled={submitting || !!success}
+            >
               {submitting ? 'Submitting...' : 'Submit review'}
             </Button>
           </div>
