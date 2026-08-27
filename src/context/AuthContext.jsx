@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '../utils/constants'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate()
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('user')
     return stored ? JSON.parse(stored) : null
@@ -19,7 +21,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
     setUser(null)
-  }, [])
+    navigate('/', { replace: true })
+  }, [navigate])
 
   const isAuthenticated = !!user
   const isCustomer = user?.role === USER_ROLES.CUSTOMER

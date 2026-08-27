@@ -219,6 +219,12 @@ export default function LoginPage() {
                 >
                   Continue with email
                 </button>
+
+                <p className="pt-2 text-center text-sm text-slate-500">
+                  <Link to="/forgot-password" className="font-medium text-primary-700 hover:text-primary-800">
+                    Forgot your password?
+                  </Link>
+                </p>
               </div>
             ) : (
               <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">

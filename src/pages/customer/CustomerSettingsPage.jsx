@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
 import ProfileAvatar from '../../components/common/ProfileAvatar'
+import PasswordInput from '../../components/common/PasswordInput'
 import { resolveMediaUrl } from '../../utils/constants'
 import { DEFAULT_LANGUAGE, LANGUAGES } from '../../utils/languages'
 import { applyGoogleTranslate, getSavedSiteLanguage } from '../../utils/googleTranslate'
@@ -50,6 +51,14 @@ export default function CustomerSettingsPage() {
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState('')
+  const [passwordError, setPasswordError] = useState('')
 
   useEffect(() => {
     setForm((prev) => ({
@@ -142,6 +151,38 @@ export default function CustomerSettingsPage() {
     } catch (err) {
       setError(err.message || 'Failed to save settings')
       setSaving(false)
+    }
+  }
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    setPasswordError('')
+    setPasswordMessage('')
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters')
+      return
+    }
+
+    setChangingPassword(true)
+    try {
+      const payload = { password: passwordForm.newPassword }
+      if (user?.has_password !== false) {
+        payload.currentPassword = passwordForm.currentPassword
+      }
+      await publicApi.changePassword(payload)
+      setPasswordMessage('Password updated. Please sign in again with your new password.')
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setTimeout(() => {
+        logout()
+      }, 1500)
+    } catch (err) {
+      setPasswordError(err.message || 'Failed to update password')
+      setChangingPassword(false)
     }
   }
 
@@ -268,6 +309,65 @@ export default function CustomerSettingsPage() {
 
             <Button type="submit" className="mt-6 rounded-full" disabled={saving || uploading}>
               {saving ? 'Saving...' : 'Save information'}
+            </Button>
+          </form>
+
+          <form
+            onSubmit={handleChangePassword}
+            className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8"
+          >
+            <h2 className="text-xl font-semibold text-ink">Change password</h2>
+            <p className="mt-1 text-sm text-ink-muted">
+              {user?.has_password === false
+                ? 'You signed in with Google. Set a password here to also sign in with email.'
+                : 'Update your password. You will be signed out after saving.'}
+            </p>
+
+            {passwordError && (
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {passwordError}
+              </div>
+            )}
+            {passwordMessage && (
+              <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {passwordMessage}
+              </div>
+            )}
+
+            <div className="mt-6 space-y-4">
+              {user?.has_password !== false && (
+                <PasswordInput
+                  id="currentPassword"
+                  label="Current password"
+                  required
+                  value={passwordForm.currentPassword}
+                  onChange={(e) =>
+                    setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
+                  }
+                />
+              )}
+              <PasswordInput
+                id="newPassword"
+                label="New password"
+                required
+                minLength={8}
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+              />
+              <PasswordInput
+                id="confirmPassword"
+                label="Confirm new password"
+                required
+                minLength={8}
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                }
+              />
+            </div>
+
+            <Button type="submit" className="mt-6 rounded-full" disabled={changingPassword || saving || uploading}>
+              {changingPassword ? 'Updating...' : 'Update password'}
             </Button>
           </form>
 

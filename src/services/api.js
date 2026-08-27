@@ -46,6 +46,9 @@ export const publicApi = {
   register: (data) => api.post('/auth/register', { ...data, role: data.role || 'customer' }),
   verifyEmail: (email, code) => api.post('/auth/verify-email', { email, code, role: 'customer' }),
   resendVerification: (email) => api.post('/auth/resend-verification', { email, role: 'customer' }),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email, role: 'customer' }),
+  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+  changePassword: (data) => api.put('/auth/me/password', data),
   searchBusinesses: (params = {}) => {
     const query = new URLSearchParams()
     if (params.q) query.set('q', params.q)
