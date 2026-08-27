@@ -200,31 +200,38 @@ export default function EditReviewPage() {
           </div>
 
           <div>
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <label htmlFor="content" className="text-base font-semibold text-slate-900">
+            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <label htmlFor="content" className="text-sm font-semibold text-slate-900 sm:text-base">
                 Tell us more about your experience
               </label>
               <button
                 type="button"
                 onClick={() => setShowTip((v) => !v)}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
               >
-                <Lightbulb className="h-4 w-4" />
+                <Lightbulb className="h-4 w-4 shrink-0" />
                 Want a tip?
               </button>
             </div>
             {showTip ? (
-              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                Update what happened and keep it honest and specific.
+              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-900 sm:px-4">
+                Mention what happened, what went well, and what could improve. Keep it honest and specific.{' '}
+                <Link to="/review-tips" className="font-semibold underline underline-offset-2 hover:text-amber-950">
+                  See all 8 tips
+                </Link>
               </div>
             ) : null}
             <textarea
               id="content"
-              rows={7}
+              rows={6}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="input-field min-h-40 resize-y"
+              placeholder="What did you like or dislike? What is this company doing well, or how can they improve? Remember to be honest, helpful, and constructive!"
+              className="input-field min-h-32 w-full resize-y text-base sm:min-h-40"
             />
+            <Link to="/review-tips" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
+              Read our tips for writing great reviews
+            </Link>
           </div>
 
           <div>
