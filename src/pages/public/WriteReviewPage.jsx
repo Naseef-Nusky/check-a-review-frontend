@@ -8,6 +8,14 @@ import { resolveMediaUrl } from '../../utils/constants'
 
 const SUGGESTED_TAGS = ['Service', 'Technology', 'Recommendation', 'Value', 'Support', 'Quality']
 
+function todayDateValue() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function WriteReviewPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
@@ -26,7 +34,7 @@ export default function WriteReviewPage() {
   const [hoverRating, setHoverRating] = useState(0)
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('')
-  const [experienceDate, setExperienceDate] = useState('')
+  const [experienceDate, setExperienceDate] = useState(todayDateValue)
   const [selectedTags, setSelectedTags] = useState([])
 
   useEffect(() => {
@@ -315,9 +323,11 @@ export default function WriteReviewPage() {
               id="experienceDate"
               type="date"
               value={experienceDate}
+              max={todayDateValue()}
               onChange={(e) => setExperienceDate(e.target.value)}
               className="input-field max-w-xs"
             />
+            <p className="mt-1.5 text-xs text-slate-500">Defaults to today. You can change it if needed.</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">

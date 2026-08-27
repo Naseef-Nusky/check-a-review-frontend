@@ -86,6 +86,27 @@ export default function CustomerSettingsPage() {
     }
   }, [])
 
+  // Refresh profile so Google users get an accurate has_password flag
+  useEffect(() => {
+    let active = true
+    publicApi
+      .getMe()
+      .then((profile) => {
+        if (!active || !profile) return
+        const token = localStorage.getItem('token')
+        const stored = localStorage.getItem('user')
+        const current = stored ? JSON.parse(stored) : null
+        login({ ...(current || {}), ...profile }, token)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on mount
+  }, [])
+
+  const needsPassword = user?.has_password === false
+
   const syncUser = (updated) => {
     const token = localStorage.getItem('token')
     const next = { ...user, ...updated }
@@ -160,28 +181,39 @@ export default function CustomerSettingsPage() {
     setPasswordMessage('')
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError('New passwords do not match')
+      setPasswordError('Passwords do not match')
       return
     }
     if (passwordForm.newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters')
+      setPasswordError('Password must be at least 8 characters')
       return
     }
 
     setChangingPassword(true)
     try {
       const payload = { password: passwordForm.newPassword }
-      if (user?.has_password !== false) {
+      if (!needsPassword) {
         payload.currentPassword = passwordForm.currentPassword
       }
-      await publicApi.changePassword(payload)
-      setPasswordMessage('Password updated. Please sign in again with your new password.')
+      const result = await publicApi.changePassword(payload)
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
-      setTimeout(() => {
-        logout()
-      }, 1500)
+
+      if (result?.user && result?.token) {
+        login(result.user, result.token)
+        setAvatarUrl(result.user.avatar_url || '')
+      } else {
+        syncUser({ has_password: true })
+      }
+
+      if (needsPassword || result?.first_password) {
+        setPasswordMessage('Password added. You can now also sign in with email.')
+        setChangingPassword(false)
+      } else {
+        setPasswordMessage('Password updated successfully.')
+        setChangingPassword(false)
+      }
     } catch (err) {
-      setPasswordError(err.message || 'Failed to update password')
+      setPasswordError(err.message || (needsPassword ? 'Failed to add password' : 'Failed to update password'))
       setChangingPassword(false)
     }
   }
@@ -316,11 +348,13 @@ export default function CustomerSettingsPage() {
             onSubmit={handleChangePassword}
             className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8"
           >
-            <h2 className="text-xl font-semibold text-ink">Change password</h2>
+            <h2 className="text-xl font-semibold text-ink">
+              {needsPassword ? 'Add password' : 'Change password'}
+            </h2>
             <p className="mt-1 text-sm text-ink-muted">
-              {user?.has_password === false
-                ? 'You signed in with Google. Set a password here to also sign in with email.'
-                : 'Update your password. You will be signed out after saving.'}
+              {needsPassword
+                ? 'You signed in with Google. Add a password so you can also sign in with email next time.'
+                : 'Update the password you use to sign in with email.'}
             </p>
 
             {passwordError && (
@@ -335,7 +369,7 @@ export default function CustomerSettingsPage() {
             )}
 
             <div className="mt-6 space-y-4">
-              {user?.has_password !== false && (
+              {!needsPassword && (
                 <PasswordInput
                   id="currentPassword"
                   label="Current password"
@@ -348,7 +382,7 @@ export default function CustomerSettingsPage() {
               )}
               <PasswordInput
                 id="newPassword"
-                label="New password"
+                label={needsPassword ? 'Password' : 'New password'}
                 required
                 minLength={8}
                 value={passwordForm.newPassword}
@@ -356,7 +390,7 @@ export default function CustomerSettingsPage() {
               />
               <PasswordInput
                 id="confirmPassword"
-                label="Confirm new password"
+                label={needsPassword ? 'Confirm password' : 'Confirm new password'}
                 required
                 minLength={8}
                 value={passwordForm.confirmPassword}
@@ -367,7 +401,13 @@ export default function CustomerSettingsPage() {
             </div>
 
             <Button type="submit" className="mt-6 rounded-full" disabled={changingPassword || saving || uploading}>
-              {changingPassword ? 'Updating...' : 'Update password'}
+              {changingPassword
+                ? needsPassword
+                  ? 'Adding...'
+                  : 'Updating...'
+                : needsPassword
+                  ? 'Add password'
+                  : 'Update password'}
             </Button>
           </form>
 
