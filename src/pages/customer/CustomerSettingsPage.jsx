@@ -86,25 +86,6 @@ export default function CustomerSettingsPage() {
     }
   }, [])
 
-  // Refresh profile so Google users get an accurate has_password flag
-  useEffect(() => {
-    let active = true
-    publicApi
-      .getMe()
-      .then((profile) => {
-        if (!active || !profile) return
-        const token = localStorage.getItem('token')
-        const stored = localStorage.getItem('user')
-        const current = stored ? JSON.parse(stored) : null
-        login({ ...(current || {}), ...profile }, token)
-      })
-      .catch(() => {})
-    return () => {
-      active = false
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on mount
-  }, [])
-
   const needsPassword = user?.has_password === false
 
   const syncUser = (updated) => {
@@ -195,25 +176,24 @@ export default function CustomerSettingsPage() {
       if (!needsPassword) {
         payload.currentPassword = passwordForm.currentPassword
       }
+
+      // Backend invalidates other sessions and returns a fresh token for this device
       const result = await publicApi.changePassword(payload)
+      if (!result?.user || !result?.token) {
+        throw new Error('Password saved, but session refresh failed. Please sign in again.')
+      }
+
+      login(result.user, result.token)
+      setAvatarUrl(result.user.avatar_url || '')
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
-
-      if (result?.user && result?.token) {
-        login(result.user, result.token)
-        setAvatarUrl(result.user.avatar_url || '')
-      } else {
-        syncUser({ has_password: true })
-      }
-
-      if (needsPassword || result?.first_password) {
-        setPasswordMessage('Password added. You can now also sign in with email.')
-        setChangingPassword(false)
-      } else {
-        setPasswordMessage('Password updated successfully.')
-        setChangingPassword(false)
-      }
+      setPasswordMessage(
+        result.first_password
+          ? 'Password added. You can now also sign in with email.'
+          : 'Password updated successfully.',
+      )
     } catch (err) {
       setPasswordError(err.message || (needsPassword ? 'Failed to add password' : 'Failed to update password'))
+    } finally {
       setChangingPassword(false)
     }
   }
@@ -354,7 +334,7 @@ export default function CustomerSettingsPage() {
             <p className="mt-1 text-sm text-ink-muted">
               {needsPassword
                 ? 'You signed in with Google. Add a password so you can also sign in with email next time.'
-                : 'Update the password you use to sign in with email.'}
+                : 'Update the password you use to sign in with email. You will stay signed in on this device.'}
             </p>
 
             {passwordError && (

@@ -126,8 +126,8 @@ export default function BusinessProfilePage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 px-6 py-10 sm:px-10">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
-            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800">
               {!logoFailed && logoSrc ? (
                 <img
                   src={logoSrc}

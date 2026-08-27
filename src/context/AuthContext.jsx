@@ -1,15 +1,28 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { USER_ROLES } from '../utils/constants'
+import { publicApi, SESSION_EXPIRED_EVENT, ApiError } from '../services/api'
 
 const AuthContext = createContext(null)
 
-export function AuthProvider({ children }) {
-  const navigate = useNavigate()
-  const [user, setUser] = useState(() => {
+function clearStoredAuth() {
+  localStorage.removeItem('user')
+  localStorage.removeItem('token')
+}
+
+function readStoredUser() {
+  try {
     const stored = localStorage.getItem('user')
     return stored ? JSON.parse(stored) : null
-  })
+  } catch {
+    return null
+  }
+}
+
+export function AuthProvider({ children }) {
+  const navigate = useNavigate()
+  const [user, setUser] = useState(() => readStoredUser())
+  const [authReady, setAuthReady] = useState(() => !localStorage.getItem('token'))
 
   const login = useCallback((userData, token) => {
     localStorage.setItem('user', JSON.stringify(userData))
@@ -17,12 +30,54 @@ export function AuthProvider({ children }) {
     setUser(userData)
   }, [])
 
+  const clearSession = useCallback(() => {
+    clearStoredAuth()
+    setUser(null)
+  }, [])
+
   const logout = useCallback(() => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
+    clearStoredAuth()
     setUser(null)
     navigate('/', { replace: true })
   }, [navigate])
+
+  // Keep React state in sync when API layer clears a dead session
+  useEffect(() => {
+    const onExpired = () => setUser(null)
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired)
+  }, [])
+
+  // On app load: validate stored token once. Refresh profile or force re-login.
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setAuthReady(true)
+      return undefined
+    }
+
+    let active = true
+    publicApi
+      .getMe()
+      .then((profile) => {
+        if (!active || !profile) return
+        login(profile, token)
+      })
+      .catch((err) => {
+        if (!active) return
+        // request() already clears + redirects on SESSION_EXPIRED
+        if (err instanceof ApiError && err.status === 401) {
+          setUser(null)
+        }
+      })
+      .finally(() => {
+        if (active) setAuthReady(true)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [login])
 
   const isAuthenticated = !!user
   const isCustomer = user?.role === USER_ROLES.CUSTOMER
@@ -31,7 +86,17 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated, isCustomer, isBusiness, isAdmin }}
+      value={{
+        user,
+        login,
+        logout,
+        clearSession,
+        authReady,
+        isAuthenticated,
+        isCustomer,
+        isBusiness,
+        isAdmin,
+      }}
     >
       {children}
     </AuthContext.Provider>

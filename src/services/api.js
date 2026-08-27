@@ -1,11 +1,51 @@
 import { API_BASE_URL } from '../utils/constants'
 
+export const SESSION_EXPIRED_EVENT = 'car:session-expired'
+
 class ApiError extends Error {
   constructor(message, status, code = null) {
     super(message)
     this.status = status
     this.code = code
   }
+}
+
+let redirectingToLogin = false
+
+function isSessionExpiredError(status, message, code) {
+  if (status !== 401) return false
+  if (code === 'SESSION_EXPIRED' || code === 'AUTH_REQUIRED') return true
+  return /invalid or expired token|authentication required/i.test(String(message || ''))
+}
+
+function clearStoredAuth() {
+  localStorage.removeItem('user')
+  localStorage.removeItem('token')
+}
+
+/** Clear dead session and send user to login (once). */
+export function handleSessionExpired({ redirect = true } = {}) {
+  clearStoredAuth()
+  window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT))
+
+  if (!redirect || redirectingToLogin) return
+  const path = window.location.pathname || ''
+  if (
+    path.startsWith('/login') ||
+    path.startsWith('/register') ||
+    path.startsWith('/verify-email')
+  ) {
+    return
+  }
+
+  redirectingToLogin = true
+  const current = `${path}${window.location.search || ''}`
+  const params = new URLSearchParams()
+  params.set('session', 'expired')
+  if (current && current !== '/') {
+    params.set('redirect', current)
+  }
+  window.location.assign(`/login?${params.toString()}`)
 }
 
 async function request(endpoint, options = {}) {
@@ -24,7 +64,12 @@ async function request(endpoint, options = {}) {
   const json = await response.json().catch(() => ({ message: 'Request failed' }))
 
   if (!response.ok) {
-    throw new ApiError(json.message || 'Request failed', response.status, json.code || null)
+    const message = json.message || 'Request failed'
+    const code = json.code || null
+    if (isSessionExpiredError(response.status, message, code)) {
+      handleSessionExpired()
+    }
+    throw new ApiError(message, response.status, code)
   }
 
   if (response.status === 204) return null
@@ -48,7 +93,7 @@ export const publicApi = {
   resendVerification: (email) => api.post('/auth/resend-verification', { email, role: 'customer' }),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email, role: 'customer' }),
   resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
-  changePassword: (data) => api.put('/auth/me/password', data),
+  changePassword: (data) => api.post('/auth/change-password', data),
   searchBusinesses: (params = {}) => {
     const query = new URLSearchParams()
     if (params.q) query.set('q', params.q)

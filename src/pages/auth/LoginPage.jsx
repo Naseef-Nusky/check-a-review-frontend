@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { BUSINESS_PORTAL_URL, GOOGLE_CLIENT_ID } from '../../utils/constants'
 import { publicApi } from '../../services/api'
@@ -71,14 +71,17 @@ export default function LoginPage() {
   const [resetDone, setResetDone] = useState(false)
   const [forgotFromMode, setForgotFromMode] = useState('email')
   const [showAppleSignIn] = useState(() => isAppleDevice())
-  const { login } = useAuth()
+  const { login, clearSession } = useAuth()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/users'
   const resetToken = searchParams.get('token') || ''
+  const sessionExpired = searchParams.get('session') === 'expired'
 
   useEffect(() => {
     if (resetToken) {
+      // Reset link means any old login session must be cleared
+      clearSession()
       setMode('reset')
       setResetDone(false)
       setError('')
@@ -89,7 +92,15 @@ export default function LoginPage() {
       setForgotSent(false)
       setError('')
     }
-  }, [searchParams, resetToken])
+  }, [searchParams, resetToken, clearSession])
+
+  useEffect(() => {
+    if (sessionExpired) {
+      clearSession()
+      setMode('email')
+      setError('Your session expired after a password change or long time away. Please sign in again.')
+    }
+  }, [sessionExpired, clearSession])
 
   const openForgotMode = (from = mode) => {
     setForgotFromMode(from === 'providers' ? 'providers' : 'email')
@@ -263,10 +274,23 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await publicApi.resetPassword(resetToken, newPassword)
+      clearSession()
       setResetDone(true)
-      setTimeout(() => leaveResetMode('email'), 2500)
+      setTimeout(() => {
+        leaveResetMode('email')
+        setError('')
+        setPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+      }, 2000)
     } catch (err) {
-      setError(err.message || 'Could not reset password')
+      // Reset-token errors should not look like login-session errors
+      const message = err.message || 'Could not reset password'
+      if (/invalid or expired reset token/i.test(message)) {
+        setError('This reset link is invalid or has expired. Please request a new one.')
+      } else {
+        setError(message)
+      }
     } finally {
       setLoading(false)
     }
@@ -358,7 +382,7 @@ export default function LoginPage() {
               resetDone ? (
                 <div className="mt-6 space-y-4">
                   <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                    Your password has been updated. Taking you to sign in...
+                    Your password has been updated. Please sign in with your new password.
                   </div>
                 </div>
               ) : (
