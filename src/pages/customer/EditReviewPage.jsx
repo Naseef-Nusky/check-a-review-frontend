@@ -113,20 +113,17 @@ export default function EditReviewPage() {
     setSubmitting(true)
     try {
       const dateLine = experienceDate ? `\n\nDate of experience: ${experienceDate}` : ''
-      const result = await publicApi.updateReview(reviewId, {
+      await publicApi.updateReview(reviewId, {
         rating,
         title: title.trim(),
         content: `${content.trim()}${dateLine}`,
       })
 
-      const status = result?.review?.status || 'pending'
       setSuccess(
-        status === 'published'
-          ? 'Your updated review passed our checks and is live.'
-          : 'Your review was updated and is being processed again. It may take a few minutes before it goes live.',
+        'Your review was updated and is being processed again. It may take a few minutes before it goes live.',
       )
 
-      setTimeout(() => navigate('/users/reviews'), 1200)
+      setTimeout(() => navigate('/users/reviews'), 900)
     } catch (err) {
       setError(err.message || 'Failed to update review')
     } finally {

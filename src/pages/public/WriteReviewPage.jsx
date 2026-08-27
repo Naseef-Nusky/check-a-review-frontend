@@ -138,7 +138,7 @@ export default function WriteReviewPage() {
     try {
       const tagLine = selectedTags.length ? `\n\nMentioned: ${selectedTags.join(', ')}` : ''
       const dateLine = experienceDate ? `\n\nDate of experience: ${experienceDate}` : ''
-      const result = await publicApi.createReview({
+      await publicApi.createReview({
         businessId: business.id,
         rating,
         title: title.trim(),
@@ -146,16 +146,13 @@ export default function WriteReviewPage() {
         inviteToken: searchParams.get('invite') || undefined,
       })
 
-      const status = result?.review?.status || 'pending'
       setSuccess(
-        status === 'published'
-          ? 'Thanks! Your review passed our checks and is now live.'
-          : 'Thanks! Your review was submitted and is being processed. Most reviews go live within a few minutes after automated checks.',
+        'Thanks! Your review was submitted and is being processed. Most reviews go live within a few minutes after automated checks.',
       )
 
       setTimeout(() => {
         navigate(`/businesses/${business.slug || business.id}`)
-      }, 1400)
+      }, 900)
     } catch (err) {
       setError(err.message || 'Failed to submit review')
     } finally {
