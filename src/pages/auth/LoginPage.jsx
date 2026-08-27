@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { BUSINESS_PORTAL_URL, GOOGLE_CLIENT_ID } from '../../utils/constants'
 import { publicApi } from '../../services/api'
@@ -60,16 +60,74 @@ function isAppleDevice() {
 }
 
 export default function LoginPage() {
-  const [mode, setMode] = useState('providers') // providers | email
+  const [mode, setMode] = useState('providers') // providers | email | forgot | reset
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
+  const [resetDone, setResetDone] = useState(false)
+  const [forgotFromMode, setForgotFromMode] = useState('email')
   const [showAppleSignIn] = useState(() => isAppleDevice())
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/users'
+  const resetToken = searchParams.get('token') || ''
+
+  useEffect(() => {
+    if (resetToken) {
+      setMode('reset')
+      setResetDone(false)
+      setError('')
+      return
+    }
+    if (searchParams.get('forgot') === '1') {
+      setMode('forgot')
+      setForgotSent(false)
+      setError('')
+    }
+  }, [searchParams, resetToken])
+
+  const openForgotMode = (from = mode) => {
+    setForgotFromMode(from === 'providers' ? 'providers' : 'email')
+    setError('')
+    setForgotSent(false)
+    setMode('forgot')
+    setSearchParams((params) => {
+      const next = new URLSearchParams(params)
+      next.delete('token')
+      next.set('forgot', '1')
+      return next
+    }, { replace: true })
+  }
+
+  const leaveForgotMode = () => {
+    setError('')
+    setForgotSent(false)
+    setMode(forgotFromMode)
+    setSearchParams((params) => {
+      const next = new URLSearchParams(params)
+      next.delete('forgot')
+      return next
+    }, { replace: true })
+  }
+
+  const leaveResetMode = (nextMode = 'email') => {
+    setError('')
+    setResetDone(false)
+    setNewPassword('')
+    setConfirmPassword('')
+    setMode(nextMode)
+    setSearchParams((params) => {
+      const next = new URLSearchParams(params)
+      next.delete('token')
+      next.delete('forgot')
+      return next
+    }, { replace: true })
+  }
 
   const finishLogin = (user, token) => {
     if (user.role === 'business') {
@@ -171,6 +229,71 @@ export default function LoginPage() {
     setMode('email')
   }
 
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      await publicApi.forgotPassword(email.trim())
+      setForgotSent(true)
+    } catch (err) {
+      setError(err.message || 'Could not send reset link')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+    if (!resetToken) {
+      setError('Invalid or missing reset link. Please request a new one.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await publicApi.resetPassword(resetToken, newPassword)
+      setResetDone(true)
+      setTimeout(() => leaveResetMode('email'), 2500)
+    } catch (err) {
+      setError(err.message || 'Could not reset password')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const cardTitle =
+    mode === 'reset'
+      ? resetDone
+        ? 'Password updated'
+        : 'Choose a new password'
+      : mode === 'forgot'
+        ? forgotSent
+          ? 'Check your email'
+          : 'Reset your password'
+        : 'Log in or sign up below'
+
+  const cardSubtitle =
+    mode === 'reset'
+      ? resetDone
+        ? 'You can now sign in with your new password.'
+        : 'Enter a new password for your account.'
+      : mode === 'forgot'
+        ? forgotSent
+          ? 'If an account exists for this email, we sent a secure reset link.'
+          : 'Enter your email and we will send you a reset link.'
+        : null
+
   return (
     <div className="bg-slate-100">
       <section className="px-4 pb-16 pt-14 sm:px-6 lg:px-8">
@@ -180,9 +303,10 @@ export default function LoginPage() {
           </h1>
 
           <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8">
-            <p className="text-center text-sm font-medium text-slate-600">
-              Log in or sign up below
-            </p>
+            <p className="text-center text-sm font-medium text-slate-600">{cardTitle}</p>
+            {cardSubtitle && (
+              <p className="mt-2 text-center text-sm text-slate-500">{cardSubtitle}</p>
+            )}
 
             {error && mode === 'providers' && (
               <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -221,11 +345,114 @@ export default function LoginPage() {
                 </button>
 
                 <p className="pt-2 text-center text-sm text-slate-500">
-                  <Link to="/forgot-password" className="font-medium text-primary-700 hover:text-primary-800">
+                  <button
+                    type="button"
+                    onClick={() => openForgotMode('providers')}
+                    className="font-medium text-primary-700 hover:text-primary-800"
+                  >
                     Forgot your password?
-                  </Link>
+                  </button>
                 </p>
               </div>
+            ) : mode === 'reset' ? (
+              resetDone ? (
+                <div className="mt-6 space-y-4">
+                  <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                    Your password has been updated. Taking you to sign in...
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleResetSubmit} className="mt-6 space-y-4">
+                  {error && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {error}
+                    </div>
+                  )}
+                  <PasswordInput
+                    id="new-password"
+                    label="New password"
+                    required
+                    minLength={8}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <PasswordInput
+                    id="confirm-password"
+                    label="Confirm new password"
+                    required
+                    minLength={8}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <Button type="submit" className="w-full rounded-full" disabled={loading}>
+                    {loading ? 'Updating...' : 'Update password'}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => leaveResetMode('providers')}
+                    className="w-full text-center text-sm font-medium text-slate-500 hover:text-slate-800"
+                  >
+                    Back to sign in
+                  </button>
+                  {error && (
+                    <p className="text-center text-sm text-slate-500">
+                      Link expired?{' '}
+                      <button
+                        type="button"
+                        onClick={() => openForgotMode('email')}
+                        className="font-medium text-primary-700 hover:text-primary-800"
+                      >
+                        Request a new reset link
+                      </button>
+                    </p>
+                  )}
+                </form>
+              )
+            ) : mode === 'forgot' ? (
+              forgotSent ? (
+                <div className="mt-6 space-y-4">
+                  <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                    If an account exists for <strong>{email}</strong>, a password reset link has been sent.
+                    Check your inbox and spam folder.
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotSent(false)
+                      leaveForgotMode()
+                    }}
+                    className="w-full text-center text-sm font-medium text-primary-700 hover:text-primary-800"
+                  >
+                    Back to sign in
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotSubmit} className="mt-6 space-y-4">
+                  {error && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {error}
+                    </div>
+                  )}
+                  <Input
+                    id="forgot-email"
+                    label="Email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <Button type="submit" className="w-full rounded-full" disabled={loading}>
+                    {loading ? 'Sending...' : 'Send reset link'}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={leaveForgotMode}
+                    className="w-full text-center text-sm font-medium text-slate-500 hover:text-slate-800"
+                  >
+                    Back to sign in
+                  </button>
+                </form>
+              )
             ) : (
               <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
                 {error && (
@@ -248,9 +475,13 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   labelRight={
-                    <Link to="/forgot-password" className="text-sm font-medium text-primary-700 hover:text-primary-800">
+                    <button
+                      type="button"
+                      onClick={() => openForgotMode('email')}
+                      className="text-sm font-medium text-primary-700 hover:text-primary-800"
+                    >
                       Forgot password?
-                    </Link>
+                    </button>
                   }
                 />
                 <Button type="submit" className="w-full rounded-full" disabled={loading}>

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route, useSearchParams } from 'react-router-dom'
 
 import PublicLayout from '../layouts/PublicLayout'
 import CustomerLayout from '../layouts/CustomerLayout'
@@ -25,8 +25,6 @@ import TermsBusinessPage from '../pages/public/TermsBusinessPage'
 
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
-import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
-import ResetPasswordPage from '../pages/auth/ResetPasswordPage'
 import VerifyEmailPage from '../pages/auth/VerifyEmailPage'
 
 import CustomerDashboardPage from '../pages/customer/CustomerDashboardPage'
@@ -46,6 +44,17 @@ import AdminPaymentsPage from '../pages/admin/AdminPaymentsPage'
 import AdminSettingsPage from '../pages/admin/AdminSettingsPage'
 
 import NotFoundPage from '../pages/NotFoundPage'
+
+function ResetPasswordRedirect() {
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get('token')
+  return (
+    <Navigate
+      to={token ? `/login?token=${encodeURIComponent(token)}` : '/login?forgot=1'}
+      replace
+    />
+  )
+}
 
 export default function AppRoutes() {
   return (
@@ -71,8 +80,8 @@ export default function AppRoutes() {
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="verify-email" element={<VerifyEmailPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="reset-password" element={<ResetPasswordPage />} />
+        <Route path="forgot-password" element={<Navigate to="/login?forgot=1" replace />} />
+        <Route path="reset-password" element={<ResetPasswordRedirect />} />
       </Route>
 
       <Route path="business/setup" element={<BusinessPortalRedirect path="/setup" />} />
