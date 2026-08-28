@@ -64,24 +64,37 @@ function AnimatedNumber({ target, suffix = '', decimals = 0, active, duration = 
   return <span>{display}</span>
 }
 
-export default function HomeStatsSection({ stats }) {
+export default function HomeStatsSection({
+  title = "The world's most trusted feedback platform",
+  stats,
+}) {
   const [sectionRef, inView] = useInView()
 
   return (
     <section ref={sectionRef} className="home-stats-section border-b border-white/10">
       <div className="home-stats-bg" aria-hidden="true" />
       <div className="home-stats-overlay" aria-hidden="true" />
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-3 sm:gap-0">
+      <div className="relative z-10 mx-auto max-w-7xl px-3 py-12 sm:px-6 sm:py-14 lg:px-8">
+        {title ? (
+          <h2
+            className={`home-stat-item mx-auto max-w-full text-center text-[10px] font-semibold leading-none tracking-tighter text-white whitespace-nowrap min-[360px]:text-xs min-[400px]:text-sm sm:text-2xl sm:leading-tight sm:tracking-tight sm:whitespace-normal md:text-3xl ${
+              inView ? 'is-visible' : ''
+            }`}
+          >
+            {title}
+          </h2>
+        ) : null}
+
+        <div className={`grid grid-cols-3 gap-1 sm:gap-0 ${title ? 'mt-8 sm:mt-12' : ''}`}>
           {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className={`home-stat-item text-center sm:px-8 ${
-                index > 0 ? 'sm:border-l sm:border-white/15' : ''
+              className={`home-stat-item text-center px-1 sm:px-8 ${
+                index > 0 ? 'border-l border-white/15 sm:border-l sm:border-white/15' : ''
               } ${inView ? 'is-visible' : ''}`}
               style={{ '--stat-delay': `${index * 120}ms` }}
             >
-              <p className="text-4xl font-semibold tracking-tight text-primary-400 tabular-nums sm:text-5xl">
+              <p className="text-xl font-semibold tracking-tight text-primary-400 tabular-nums min-[360px]:text-2xl sm:text-4xl lg:text-5xl">
                 <AnimatedNumber
                   target={stat.numeric}
                   suffix={stat.suffix}
@@ -90,8 +103,10 @@ export default function HomeStatsSection({ stats }) {
                   duration={1500 + index * 150}
                 />
               </p>
-              <p className="mt-3 text-sm font-semibold text-white">{stat.label}</p>
-              <p className="mt-1 text-sm text-slate-300">{stat.detail}</p>
+              <p className="mt-1 text-[9px] font-semibold leading-tight text-white min-[360px]:text-[10px] sm:mt-3 sm:text-sm sm:leading-normal">
+                {stat.label}
+              </p>
+              <p className="mt-1 hidden text-sm text-slate-300 sm:block">{stat.detail}</p>
             </div>
           ))}
         </div>

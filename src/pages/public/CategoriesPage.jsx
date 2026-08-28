@@ -1,16 +1,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 import { CategoryIcon } from '../../components/common/AppIcon'
 import { getCategoryIcon } from '../../utils/categoryIcons'
 import { publicApi } from '../../services/api'
 
+function matchesTerm(text, term) {
+  return String(text || '').toLowerCase().includes(term)
+}
+
 export default function CategoriesPage() {
   const [searchParams] = useSearchParams()
   const selected = searchParams.get('cat')
   const [categories, setCategories] = useState([])
+  const [categoryQuery, setCategoryQuery] = useState(selected || '')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (selected) setCategoryQuery(selected)
+  }, [selected])
 
   useEffect(() => {
     let active = true
@@ -36,13 +46,36 @@ export default function CategoriesPage() {
     }
   }, [])
 
+  const filteredCategories = useMemo(() => {
+    const term = categoryQuery.trim().toLowerCase()
+    if (!term) return categories
+
+    return categories
+      .map((main) => {
+        const mainMatches = matchesTerm(main.name, term)
+        const subcategories = (main.subcategories || []).filter(
+          (sub) => mainMatches || matchesTerm(sub.name, term),
+        )
+        if (!mainMatches && subcategories.length === 0) return null
+        return {
+          ...main,
+          subcategories,
+          count: subcategories.reduce((sum, sub) => sum + Number(sub.count || 0), 0),
+        }
+      })
+      .filter(Boolean)
+  }, [categories, categoryQuery])
+
   const totals = useMemo(
     () => ({
-      mainCount: categories.length,
-      businessCount: categories.reduce((sum, main) => sum + Number(main.count || 0), 0),
+      mainCount: filteredCategories.length,
+      businessCount: filteredCategories.reduce((sum, main) => sum + Number(main.count || 0), 0),
+      subCount: filteredCategories.reduce((sum, main) => sum + (main.subcategories?.length || 0), 0),
     }),
-    [categories],
+    [filteredCategories],
   )
+
+  const hasFilter = Boolean(categoryQuery.trim())
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -52,15 +85,34 @@ export default function CategoriesPage() {
         description="Browse main categories and subcategories to find trusted businesses."
       />
 
-      {selected && (
-        <p className="mb-6 rounded-xl border border-primary-100 bg-primary-50 px-4 py-3 text-sm text-primary-800">
-          Viewing category: <strong>{selected}</strong>
-        </p>
-      )}
+      <form
+        className="mb-8 max-w-2xl"
+        onSubmit={(e) => e.preventDefault()}
+        role="search"
+        aria-label="Search categories"
+      >
+        <div className="relative">
+          <Search
+            className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 stroke-[1.5] text-slate-400"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            value={categoryQuery}
+            onChange={(e) => setCategoryQuery(e.target.value)}
+            placeholder="Search categories..."
+            className="input-field pl-11"
+          />
+        </div>
+      </form>
 
       {!loading && !error && (
         <div className="mb-8 flex flex-wrap gap-4 text-sm text-ink-muted">
-          <span>{totals.mainCount} main categories</span>
+          <span>
+            {hasFilter
+              ? `${totals.subCount} matching subcategories`
+              : `${totals.mainCount} main categories`}
+          </span>
           <span>{totals.businessCount} businesses listed</span>
         </div>
       )}
@@ -83,9 +135,15 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      {!loading && !error && categories.length > 0 && (
+      {!loading && !error && categories.length > 0 && filteredCategories.length === 0 && (
+        <div className="rounded-2xl border border-border bg-white px-6 py-12 text-center text-ink-muted">
+          No categories match &ldquo;{categoryQuery.trim()}&rdquo;. Try another name.
+        </div>
+      )}
+
+      {!loading && !error && filteredCategories.length > 0 && (
         <div className="space-y-10">
-          {categories.map((main) => {
+          {filteredCategories.map((main) => {
             const Icon = getCategoryIcon(main.name)
             return (
               <section key={main.id} className="rounded-2xl border border-border bg-white p-6 shadow-sm">

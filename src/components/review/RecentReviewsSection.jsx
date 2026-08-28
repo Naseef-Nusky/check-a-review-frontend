@@ -22,13 +22,13 @@ export default function RecentReviewsSection({ reviews = [], loading = false }) 
       <div className="latest-reviews-bg" aria-hidden="true" />
       <div className="latest-reviews-overlay" aria-hidden="true" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
-          <div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <p className="section-kicker">Community</p>
             <h2 className="section-title mt-2">Latest reviews</h2>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link to="/reviews" className="mr-2 hidden text-sm font-medium text-primary-700 hover:text-primary-800 sm:inline">
               View all
             </Link>

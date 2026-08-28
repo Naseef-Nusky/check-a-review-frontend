@@ -166,10 +166,10 @@ export default function BusinessProfilePage() {
             </div>
 
             <div className="mt-8">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <h2 className="text-lg font-semibold text-ink">Customer reviews</h2>
                 <input
-                  className="input-field max-w-xs"
+                  className="input-field w-full sm:max-w-xs"
                   placeholder="Search reviews"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}

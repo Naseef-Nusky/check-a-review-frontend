@@ -36,7 +36,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           <div>
             <Link to="/" className="inline-flex items-center">
               <img src="/logo-check-a-review.png" alt="Check A Review" className="h-8 w-auto object-contain" />

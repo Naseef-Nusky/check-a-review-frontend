@@ -1,10 +1,16 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
-export default function SearchBar({ placeholder = 'Search for a business...', className = '', variant = 'light' }) {
-  const [query, setQuery] = useState('')
+export default function SearchBar({ placeholder = 'Search companies...', className = '', variant = 'light' }) {
+  const [searchParams] = useSearchParams()
+  const initialQuery = searchParams.get('q') || searchParams.get('category') || ''
+  const [query, setQuery] = useState(initialQuery)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
 
   const handleSubmit = (e) => {
     e.preventDefault()

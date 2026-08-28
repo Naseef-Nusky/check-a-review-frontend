@@ -113,7 +113,7 @@ export default function HomePage() {
             Discover verified reviews, compare reputation signals, and make better decisions with a professional review platform.
           </p>
           <div className="mx-auto mt-10 max-w-2xl">
-            <SearchBar placeholder="Search companies, categories, or locations..." variant="dark" />
+            <SearchBar placeholder="Search companies..." variant="dark" />
           </div>
         </div>
       </section>
@@ -123,7 +123,7 @@ export default function HomePage() {
       <HomeStatsSection stats={stats} />
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="section-kicker">Featured</p>
             <h2 className="section-title mt-2">Top-rated businesses</h2>
@@ -148,7 +148,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="section-kicker">Explore</p>
         <h2 className="section-title mt-2">Browse by category</h2>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {(categories.length > 0
             ? categories
             : ['Restaurants & Bars', 'Electronics & Technology', 'Health & Medical', 'Home Services']
@@ -161,7 +161,7 @@ export default function HomePage() {
                 className="card card-hover flex items-center gap-3 px-4 py-4 text-sm font-medium text-slate-700"
               >
                 <CategoryIcon icon={Icon} boxClassName="!h-8 !w-8 rounded-lg" />
-                <span>{category}</span>
+                <span className="min-w-0 line-clamp-2">{category}</span>
               </Link>
             )
           })}

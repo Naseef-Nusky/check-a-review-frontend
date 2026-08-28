@@ -108,7 +108,14 @@ export const publicApi = {
   getCategories: () => api.get('/businesses/categories'),
   getBusinessReviews: (businessId, limit = 20) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),
-  getLatestReviews: (limit = 12) => api.get(`/reviews/latest?limit=${limit}`),
+  getLatestReviews: (params = {}) => {
+    const options = typeof params === 'number' ? { limit: params } : params
+    const query = new URLSearchParams()
+    if (options.page) query.set('page', options.page)
+    if (options.limit) query.set('limit', options.limit)
+    const qs = query.toString()
+    return api.get(`/reviews/latest${qs ? `?${qs}` : ''}`)
+  },
   getReviewInvite: (token) => api.get(`/reviews/invite/${token}`),
   createReview: (data) => api.post('/reviews', data),
   updateReview: (id, data) => api.put(`/reviews/${id}`, data),

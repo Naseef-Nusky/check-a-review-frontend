@@ -51,21 +51,23 @@ export default function SearchPage() {
       <PageHeader
         kicker="Discover"
         title="Find Businesses"
-        description="Search for companies and read verified customer reviews"
+        description="Search companies and read verified customer reviews"
       />
       <SearchBar className="max-w-2xl" />
       {label && (
         <p className="mt-4 text-sm text-ink-muted">
           {loading
             ? 'Searching...'
-            : `Showing ${results.length} result${results.length === 1 ? '' : 's'} for "${label}"`}
+            : category
+              ? `Showing ${results.length} business${results.length === 1 ? '' : 'es'} in "${label}"`
+              : `Showing ${results.length} compan${results.length === 1 ? 'y' : 'ies'} matching "${label}"`}
         </p>
       )}
       {error && (
         <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
       {!loading && !error && results.length === 0 && (
-        <p className="mt-8 text-sm text-ink-muted">No businesses found. Try another search or category.</p>
+        <p className="mt-8 text-sm text-ink-muted">No companies found. Try another company name.</p>
       )}
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {results.map((business) => (
