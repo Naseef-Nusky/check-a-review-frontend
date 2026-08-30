@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import PageHeader from '../../components/common/PageHeader'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
+import { ApiError, publicApi } from '../../services/api'
 import { CONTACT_EMAIL } from '../../utils/constants'
 
 const contactItems = [
@@ -13,10 +14,30 @@ const contactItems = [
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert('Message sent! (Connect to backend API)')
+    setSubmitting(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      await publicApi.submitContact({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: form.subject.trim(),
+        message: form.message.trim(),
+      })
+      setSuccess('Thank you for contacting us. We will get back to you shortly.')
+      setForm({ name: '', email: '', subject: '', message: '' })
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to send message. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -28,9 +49,19 @@ export default function ContactPage() {
       />
       <div className="grid gap-8 lg:grid-cols-2">
         <form onSubmit={handleSubmit} className="card space-y-5 p-6 sm:p-8">
-          <Input id="name" label="Name" type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <Input id="email" label="Email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          <Input id="subject" label="Subject" type="text" required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} />
+          {success ? (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              {success}
+            </div>
+          ) : null}
+          {error ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
+          <Input id="name" label="Name" type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} disabled={submitting} />
+          <Input id="email" label="Email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} disabled={submitting} />
+          <Input id="subject" label="Subject" type="text" required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} disabled={submitting} />
           <div>
             <label htmlFor="message" className="label-text">Message</label>
             <textarea
@@ -40,9 +71,12 @@ export default function ContactPage() {
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               className="input-field"
+              disabled={submitting}
             />
           </div>
-          <Button type="submit">Send Message</Button>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? 'Sending...' : 'Send Message'}
+          </Button>
         </form>
 
         <div className="space-y-5">

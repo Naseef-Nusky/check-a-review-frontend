@@ -129,6 +129,7 @@ export const publicApi = {
   },
   removeAvatar: () => api.delete('/auth/me/avatar'),
   deleteAccount: () => api.delete('/auth/me'),
+  submitContact: (data) => api.post('/contact', data),
 }
 
 export { ApiError }
