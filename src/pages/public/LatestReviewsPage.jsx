@@ -88,7 +88,7 @@ export default function LatestReviewsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <PageHeader
         title="Latest Reviews"
-        description="Recently published customer reviews"
+        description="Recently published customer reviews. Every review is screened by automated fraud/safety checks and AI before going live."
       />
 
       {loading && <p className="mt-8 text-sm text-ink-muted">Loading reviews...</p>}

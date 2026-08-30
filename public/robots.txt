@@ -1,0 +1,16 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Private or low-value routes
+Disallow: /users/
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /businesses/*/write-review
+Disallow: /review-invite/
+
+Sitemap: /sitemap.xml

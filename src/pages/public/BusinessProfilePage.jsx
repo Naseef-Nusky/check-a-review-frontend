@@ -5,6 +5,8 @@ import ReviewCard from '../../components/review/ReviewCard'
 import RatingDistribution from '../../components/review/RatingDistribution'
 import AiReviewSummaryCard from '../../components/review/AiReviewSummaryCard'
 import Badge from '../../components/common/Badge'
+import PageMeta from '../../components/common/PageMeta'
+import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import { resolveMediaUrl } from '../../utils/constants'
@@ -121,9 +123,24 @@ export default function BusinessProfilePage() {
   const reviewCount = Number(business.review_count || 0)
   const trustScore = Math.round(Number(business.trust_score || 0))
   const logoSrc = resolveMediaUrl(business.logo_url)
+  const profilePath = `/businesses/${business.slug || id}`
+  const profileDescription = [
+    `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'} for ${business.name}.`,
+    rating > 0 ? `Average rating ${rating.toFixed(1)} out of 5.` : null,
+    business.category ? `Listed in ${business.category}.` : null,
+    trustScore > 0 ? `Trust score ${trustScore}%.` : null,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <PageMeta
+        title={`${business.name} reviews & ratings`}
+        description={profileDescription}
+        path={profilePath}
+        image={logoSrc || undefined}
+      />
       <div className="overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 px-6 py-10 sm:px-10">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
@@ -175,6 +192,7 @@ export default function BusinessProfilePage() {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
+              <ReviewScreeningNote variant="inline" className="mt-2" />
               <p className="mt-2 text-sm text-ink-muted">
                 Showing {filteredReviews.length} of {reviews.length} reviews
                 {selectedStars.length > 0

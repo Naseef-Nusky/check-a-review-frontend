@@ -6,6 +6,7 @@ import RecentReviewsSection from '../../components/review/RecentReviewsSection'
 import Button from '../../components/common/Button'
 import HeroBackground from '../../components/common/HeroBackground'
 import HomeStatsSection from '../../components/common/HomeStatsSection'
+import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
 import ReviewMarquee from '../../components/review/ReviewMarquee'
 import { getCategoryIcon } from '../../utils/categoryIcons'
 import { CategoryIcon } from '../../components/common/AppIcon'
@@ -121,6 +122,8 @@ export default function HomePage() {
       <ReviewMarquee reviews={marqueeReviews} loading={reviewsLoading} />
 
       <HomeStatsSection stats={stats} />
+
+      <ReviewScreeningNote variant="band" />
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

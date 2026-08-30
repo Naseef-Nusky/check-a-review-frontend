@@ -4,6 +4,7 @@ import { Info, Lightbulb, Shield, Star } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
+import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
 import { resolveMediaUrl } from '../../utils/constants'
 
 const SUGGESTED_TAGS = ['Service', 'Technology', 'Recommendation', 'Value', 'Support', 'Quality']
@@ -300,10 +301,7 @@ export default function WriteReviewPage() {
             <Link to="/review-tips" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
               Read our tips for writing great reviews
             </Link>
-            <p className="mt-3 text-xs leading-relaxed text-ink-muted">
-              After you submit, your review enters a processing stage. We check for spam, guideline issues, and duplicates.
-              Most reviews go live within a few minutes; flagged ones may take longer for manual review.
-            </p>
+            <ReviewScreeningNote className="mt-4" />
           </div>
 
           <div>

@@ -8,6 +8,7 @@ import {
   Users,
 } from 'lucide-react'
 import { APP_NAME, BUSINESS_PORTAL_URL } from '../../utils/constants'
+import { REVIEW_SCREENING_COPY } from '../../components/common/ReviewScreeningNote'
 
 const sections = [
   {
@@ -56,7 +57,7 @@ const pillars = [
     id: 'checks',
     icon: Shield,
     title: 'Automated checks',
-    body: 'Every submitted review enters a processing stage. We check for duplicates, policy issues, and low-quality or high-risk signals before a review can go live. Reviews that pass can auto-publish; flagged ones wait for admin review.',
+    body: REVIEW_SCREENING_COPY,
   },
   {
     id: 'guidelines',
@@ -76,7 +77,7 @@ export default function TrustCentrePage() {
             How we protect trust on {APP_NAME}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-300">
-            Transparency matters. This hub explains how reviews are collected, moderated, and kept useful for people and businesses.
+            {REVIEW_SCREENING_COPY}
           </p>
         </div>
       </section>
