@@ -25,6 +25,9 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 /** Public consumer site origin (used for SEO canonical URLs and sitemap) */
 export const PUBLIC_SITE_URL = import.meta.env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173'
 
+/** Google Search Console HTML tag verification */
+export const GOOGLE_SITE_VERIFICATION = 'zAqYnx3X42ATAbzT-ro31y6POhiR67AncXoG-uCdN6o'
+
 /** Google Identity Services client ID (must match backend GOOGLE_CLIENT_ID) */
 export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
