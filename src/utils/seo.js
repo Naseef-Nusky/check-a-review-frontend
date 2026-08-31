@@ -164,7 +164,7 @@ export const PUBLIC_ROUTE_SEO = [
   {
     test: (path) => path === '/contact',
     meta: {
-      title: 'Contact us',
+      title: 'Get in touch with us',
       description: 'Contact the Check A Review team for help with your account, business listings, or platform questions.',
       path: '/contact',
     },

@@ -6,7 +6,7 @@ const footerLinks = {
   Company: [
     { to: '/about', label: 'About us' },
     { to: '/trust-centre', label: 'Trust Centre' },
-    { to: '/contact', label: 'Contact Us' },
+    { to: '/contact', label: 'Contact us' },
   ],
   Platform: [
     { to: '/search', label: 'Find Businesses' },
@@ -16,7 +16,7 @@ const footerLinks = {
   'For Business': [
     { href: `${BUSINESS_PORTAL_URL}/setup`, label: 'Register Business' },
     { href: `${BUSINESS_PORTAL_URL}/login`, label: 'Business Dashboard' },
-    { to: '/contact', label: 'Contact Sales' },
+    { href: `${BUSINESS_PORTAL_URL}/contact`, label: 'Contact Sales' },
   ],
   Support: [
     { to: '/help', label: 'Help Center' },

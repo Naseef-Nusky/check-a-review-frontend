@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
-export default function Input({ label, id, className = '', type = 'text', ...props }) {
+export default function Input({ label, id, className = '', type = 'text', error = '', ...props }) {
   const [showPassword, setShowPassword] = useState(false)
   const isPassword = type === 'password'
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type
@@ -17,7 +17,9 @@ export default function Input({ label, id, className = '', type = 'text', ...pro
         <input
           id={id}
           type={inputType}
-          className={`input-field ${isPassword ? 'pr-11' : ''} ${className}`}
+          className={`input-field ${isPassword ? 'pr-11' : ''} ${error ? 'border-red-400 focus:border-red-400 focus:ring-red-500/10' : ''} ${className}`}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
           {...props}
         />
         {isPassword && (
@@ -32,6 +34,11 @@ export default function Input({ label, id, className = '', type = 'text', ...pro
           </button>
         )}
       </div>
+      {error ? (
+        <p id={`${id}-error`} className="mt-1.5 text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }
