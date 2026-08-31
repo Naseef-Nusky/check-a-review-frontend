@@ -12,5 +12,6 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /businesses/*/write-review
 Disallow: /review-invite/
+Disallow: /api/
 
 Sitemap: https://checkareview.com/sitemap.xml

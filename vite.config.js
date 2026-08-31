@@ -11,6 +11,7 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      // Root sitemap for local dev (production uses /api/sitemap.xml or static public/sitemap.xml)
       '/sitemap.xml': {
         target: 'http://localhost:5000',
         changeOrigin: true,
