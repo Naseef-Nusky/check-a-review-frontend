@@ -270,6 +270,24 @@ export const PUBLIC_ROUTE_SEO = [
       robots: NOINDEX,
     }),
   },
+  {
+    test: (path) => path.startsWith('/users'),
+    meta: (path) => ({
+      title: 'Your account',
+      description: `Your ${APP_NAME} customer account.`,
+      path,
+      robots: NOINDEX,
+    }),
+  },
+  {
+    test: (path) => path.startsWith('/admin'),
+    meta: (path) => ({
+      title: 'Admin',
+      description: `${APP_NAME} administration.`,
+      path,
+      robots: NOINDEX,
+    }),
+  },
 ]
 
 export function getPublicRouteSeo(pathname, search = '') {
