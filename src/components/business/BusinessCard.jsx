@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import StarRating from '../common/StarRating'
-import { resolveMediaUrl } from '../../utils/constants'
+import { businessProfilePath, resolveMediaUrl } from '../../utils/constants'
 
 export default function BusinessCard({ business }) {
   const logoSrc = resolveMediaUrl(business.logo || business.logo_url)
@@ -17,7 +17,7 @@ export default function BusinessCard({ business }) {
 
   return (
     <Link
-      to={`/businesses/${business.slug || business.id}`}
+      to={businessProfilePath(business)}
       className="group flex items-center gap-4 rounded-2xl border border-border bg-white p-4 transition hover:border-primary-200 hover:bg-primary-50/30 sm:p-5"
     >
       <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200/80">

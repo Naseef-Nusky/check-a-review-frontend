@@ -53,3 +53,18 @@ export function resolveMediaUrl(path) {
   }
   return normalized
 }
+
+export function formatExternalUrl(url) {
+  const value = String(url || '').trim()
+  if (!value) return ''
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`
+}
+
+export function businessProfilePath(business) {
+  if (!business) return '/search'
+  const slug = business.slug || business.business_slug
+  const id = business.id || business.business_id
+  if (slug) return `/businesses/${slug}`
+  if (id) return `/businesses/${id}`
+  return '/search'
+}

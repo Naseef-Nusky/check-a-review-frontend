@@ -4,6 +4,7 @@ import { Lightbulb, Shield, Star } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
+import { businessProfilePath, formatExternalUrl } from '../../utils/constants'
 
 function stripExtraLines(content = '') {
   return String(content)
@@ -157,8 +158,26 @@ export default function EditReviewPage() {
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 rounded-2xl border border-border bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-600">Edit review</p>
-          <p className="mt-2 truncate text-lg font-semibold text-slate-900">{review?.business_name}</p>
-          {websiteHost ? <p className="truncate text-sm text-slate-500">{websiteHost}</p> : null}
+          {review?.business_slug || review?.business_id ? (
+            <Link
+              to={businessProfilePath(review)}
+              className="mt-2 block truncate text-lg font-semibold text-primary-700 hover:text-primary-800 hover:underline"
+            >
+              {review?.business_name}
+            </Link>
+          ) : (
+            <p className="mt-2 truncate text-lg font-semibold text-slate-900">{review?.business_name}</p>
+          )}
+          {websiteHost && review?.business_website ? (
+            <a
+              href={formatExternalUrl(review.business_website)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 block truncate text-sm text-slate-500 hover:text-primary-700 hover:underline"
+            >
+              {websiteHost}
+            </a>
+          ) : null}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8 rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">

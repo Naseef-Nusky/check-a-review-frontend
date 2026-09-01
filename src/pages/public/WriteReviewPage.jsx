@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import Button from '../../components/common/Button'
 import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
-import { resolveMediaUrl } from '../../utils/constants'
+import { businessProfilePath, formatExternalUrl, resolveMediaUrl } from '../../utils/constants'
 
 const SUGGESTED_TAGS = ['Service', 'Technology', 'Recommendation', 'Value', 'Support', 'Quality']
 
@@ -181,7 +181,10 @@ export default function WriteReviewPage() {
     <div className="min-h-[70vh] overflow-x-hidden bg-[#f7f7f5]">
       <div className="mx-auto w-full max-w-3xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-5 flex items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm sm:mb-8 sm:gap-4 sm:p-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-base font-semibold text-slate-700 sm:h-14 sm:w-14 sm:text-lg">
+          <Link
+            to={businessProfilePath(business)}
+            className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-base font-semibold text-slate-700 transition hover:ring-2 hover:ring-primary-200 sm:h-14 sm:w-14 sm:text-lg"
+          >
             {!logoFailed && business?.logo_url ? (
               <img
                 src={resolveMediaUrl(business.logo_url)}
@@ -192,10 +195,24 @@ export default function WriteReviewPage() {
             ) : (
               business?.name?.charAt(0) || 'B'
             )}
-          </div>
+          </Link>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-semibold text-slate-900 sm:text-lg">{business?.name}</p>
-            {websiteHost ? <p className="truncate text-xs text-slate-500 sm:text-sm">{websiteHost}</p> : null}
+            <Link
+              to={businessProfilePath(business)}
+              className="block truncate text-base font-semibold text-primary-700 hover:text-primary-800 hover:underline sm:text-lg"
+            >
+              {business?.name}
+            </Link>
+            {websiteHost && business?.website ? (
+              <a
+                href={formatExternalUrl(business.website)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-0.5 block truncate text-xs text-slate-500 hover:text-primary-700 hover:underline sm:text-sm"
+              >
+                {websiteHost}
+              </a>
+            ) : null}
           </div>
         </div>
 

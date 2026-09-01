@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 import StarRating from '../common/StarRating'
-import { resolveMediaUrl } from '../../utils/constants'
+import { businessProfilePath, resolveMediaUrl } from '../../utils/constants'
 import ProfileAvatar from '../common/ProfileAvatar'
 
 function resolveReviewerName(review = {}) {
@@ -30,7 +31,7 @@ export default function HomeReviewCard({ review }) {
   const [logoFailed, setLogoFailed] = useState(false)
   const author = resolveReviewerName(review)
   const business = resolveBusiness(review)
-  const href = `/businesses/${business.slug || business.id}`
+  const href = businessProfilePath(business)
   const logoSrc = resolveMediaUrl(business.logo)
   const body = review.content || review.title || ''
   const title = review.title || ''
@@ -69,7 +70,7 @@ export default function HomeReviewCard({ review }) {
 
       <Link
         to={href}
-        className="mt-5 flex items-center gap-3 border-t border-border pt-4 transition hover:opacity-90"
+        className="group mt-5 flex items-center gap-3 border-t border-border pt-4 transition hover:opacity-90"
         title={`View ${business.name}`}
       >
         {!logoFailed && logoSrc ? (
@@ -85,13 +86,16 @@ export default function HomeReviewCard({ review }) {
             {(business.name || 'B').charAt(0).toUpperCase()}
           </div>
         )}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Business</p>
-          <p className="truncate text-sm font-semibold text-ink">{business.name}</p>
+          <p className="truncate text-sm font-semibold text-primary-700 group-hover:text-primary-800 group-hover:underline">
+            {business.name}
+          </p>
           <p className="truncate text-xs text-ink-muted">
             {business.category || business.website || 'View profile'}
           </p>
         </div>
+        <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-primary-500" aria-hidden="true" />
       </Link>
     </article>
   )
