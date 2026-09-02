@@ -6,18 +6,7 @@ import Button from '../../components/common/Button'
 import ProfileAvatar from '../../components/common/ProfileAvatar'
 import PasswordInput from '../../components/common/PasswordInput'
 import { resolveMediaUrl } from '../../utils/constants'
-import { DEFAULT_LANGUAGE, LANGUAGES } from '../../utils/languages'
-import { applyGoogleTranslate, getSavedSiteLanguage } from '../../utils/googleTranslate'
-
-const COUNTRIES = [
-  'Sri Lanka',
-  'United States',
-  'United Kingdom',
-  'Canada',
-  'Australia',
-  'India',
-  'United Arab Emirates',
-]
+import { BUSINESS_LOCATIONS } from '../../utils/locations'
 
 function prefsKey(userId) {
   return `user_settings_${userId || 'guest'}`
@@ -41,8 +30,7 @@ export default function CustomerSettingsPage() {
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    country: saved?.country || 'Sri Lanka',
-    language: saved?.language || getSavedSiteLanguage() || DEFAULT_LANGUAGE,
+    country: saved?.country || '',
   })
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '')
   const [reviewCount, setReviewCount] = useState(0)
@@ -145,11 +133,10 @@ export default function CustomerSettingsPage() {
         prefsKey(user?.id),
         JSON.stringify({
           country: form.country,
-          language: form.language,
         }),
       )
-      setMessage('Your information has been saved. Applying language…')
-      applyGoogleTranslate(form.language, { reload: true })
+      setMessage('Your information has been saved.')
+      setSaving(false)
     } catch (err) {
       setError(err.message || 'Failed to save settings')
       setSaving(false)
@@ -301,21 +288,14 @@ export default function CustomerSettingsPage() {
               <div>
                 <label htmlFor="country" className="label-text text-slate-700">Country</label>
                 <select id="country" value={form.country} onChange={updateField('country')} className="input-field">
-                  {COUNTRIES.map((country) => (
+                  <option value="">Select country</option>
+                  {BUSINESS_LOCATIONS.map((country) => (
                     <option key={country} value={country}>{country}</option>
                   ))}
+                  {form.country && !BUSINESS_LOCATIONS.includes(form.country) ? (
+                    <option value={form.country}>{form.country}</option>
+                  ) : null}
                 </select>
-              </div>
-              <div>
-                <label htmlFor="language" className="label-text text-slate-700">Language</label>
-                <select id="language" value={form.language} onChange={updateField('language')} className="input-field">
-                  {LANGUAGES.map((language) => (
-                    <option key={language.value} value={language.value}>{language.label}</option>
-                  ))}
-                </select>
-                <p className="mt-1.5 text-xs text-ink-muted">
-                  Powered by Google Translate. The site will refresh after you save.
-                </p>
               </div>
             </div>
 
