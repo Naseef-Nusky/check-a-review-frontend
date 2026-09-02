@@ -134,7 +134,7 @@ export default function BusinessProfilePage() {
     .join(' ')
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:flex lg:h-[calc(100dvh-4rem)] lg:flex-col lg:overflow-hidden lg:px-8 lg:py-4">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:flex lg:h-[calc(100dvh-3.5rem)] lg:flex-col lg:overflow-hidden lg:px-8 lg:py-3">
       <PageMeta
         title={`${business.name} reviews & ratings`}
         description={profileDescription}
@@ -148,9 +148,9 @@ export default function BusinessProfilePage() {
               className="absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 bg-slate-900 bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 lg:inset-0 lg:w-full lg:translate-x-0"
               aria-hidden="true"
             />
-            <div className="relative px-6 py-8 sm:px-10 sm:py-9">
+            <div className="relative px-6 py-6 sm:px-10 sm:py-7 lg:py-5">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800 lg:h-16 lg:w-16 lg:text-xl">
                   {!logoFailed && logoSrc ? (
                     <img
                       src={logoSrc}
@@ -184,12 +184,12 @@ export default function BusinessProfilePage() {
           </div>
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-8 p-6 sm:p-10 lg:grid-cols-[1.4fr_0.8fr] lg:overflow-hidden lg:p-8">
+        <div className="grid min-h-0 flex-1 gap-8 p-6 sm:p-10 lg:grid-cols-[1.4fr_0.8fr] lg:overflow-hidden lg:p-6">
           <div className="flex min-h-0 flex-col lg:overflow-hidden">
             <div className="shrink-0">
               <AiReviewSummaryCard summary={aiSummary} loading={aiSummaryLoading} />
 
-              <div className="mt-8">
+              <div className="mt-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <h2 className="text-lg font-semibold text-ink">Customer reviews</h2>
                   <input
@@ -213,7 +213,7 @@ export default function BusinessProfilePage() {
               </div>
             </div>
 
-            <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
+            <div className="mt-4 min-h-[28rem] flex-1 overflow-y-auto pr-1 sm:min-h-[32rem] lg:min-h-0">
               <div className="space-y-4 pb-1">
                 {filteredReviews.length === 0 ? (
                   <div className="rounded-2xl border border-border px-4 py-8 text-center text-sm text-ink-muted">
@@ -223,6 +223,7 @@ export default function BusinessProfilePage() {
                   filteredReviews.map((review) => (
                     <ReviewCard
                       key={review.id}
+                      variant="detailed"
                       review={{
                         ...review,
                         author: review.author_name,

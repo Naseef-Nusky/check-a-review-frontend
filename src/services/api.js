@@ -103,6 +103,7 @@ export const publicApi = {
     const qs = query.toString()
     return api.get(`/businesses/search${qs ? `?${qs}` : ''}`)
   },
+  getFeaturedBusinesses: () => api.get('/businesses/featured'),
   getBusiness: (idOrSlug) => api.get(`/businesses/${idOrSlug}`),
   getBusinessReviewSummary: (idOrSlug) => api.get(`/businesses/${idOrSlug}/review-summary`),
   getCategories: () => api.get('/businesses/categories'),

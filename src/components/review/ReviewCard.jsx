@@ -80,7 +80,7 @@ export default function ReviewCard({
         {review.title && (
           <h3 className="mt-4 text-base font-semibold text-ink">{review.title}</h3>
         )}
-        <p className="mt-2 text-sm leading-relaxed text-ink-muted line-clamp-3">{review.content}</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-muted line-clamp-12">{review.content}</p>
         <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-xs text-ink-muted">
           <span>{review.date || 'Recently'}</span>
         </div>

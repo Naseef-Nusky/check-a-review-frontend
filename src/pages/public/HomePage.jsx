@@ -40,7 +40,7 @@ export default function HomePage() {
     ;(async () => {
       try {
         const [search, tree, reviews] = await Promise.all([
-          publicApi.searchBusinesses({ limit: 4 }),
+          publicApi.getFeaturedBusinesses(),
           publicApi.getCategories(),
           publicApi.getLatestReviews(16).catch(() => ({ reviews: [] })),
         ])
