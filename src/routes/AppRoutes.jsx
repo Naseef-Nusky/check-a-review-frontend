@@ -22,6 +22,8 @@ import HelpBusinessesPage from '../pages/public/HelpBusinessesPage'
 import PrivacyPolicyPage from '../pages/public/PrivacyPolicyPage'
 import TermsConsumersPage from '../pages/public/TermsConsumersPage'
 import TermsBusinessPage from '../pages/public/TermsBusinessPage'
+import PostingGuidelinesPage from '../pages/public/PostingGuidelinesPage'
+import CookiePolicyPage from '../pages/public/CookiePolicyPage'
 
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
@@ -77,6 +79,8 @@ export default function AppRoutes() {
         <Route path="privacy" element={<PrivacyPolicyPage />} />
         <Route path="terms" element={<TermsConsumersPage />} />
         <Route path="terms/business" element={<TermsBusinessPage />} />
+        <Route path="posting-guidelines" element={<PostingGuidelinesPage />} />
+        <Route path="cookies" element={<CookiePolicyPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="verify-email" element={<VerifyEmailPage />} />

@@ -8,7 +8,7 @@ import { CONTACT_EMAIL } from '../../utils/constants'
 
 const contactItems = [
   { label: 'Email', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, icon: Mail },
-  { label: 'Office', value: '123 Review Street, New York, NY', icon: MapPin },
+  { label: 'Office', value: '125 Deansgate, Greater Manchester M3 2BY', icon: MapPin },
 ]
 
 const emptyForm = { name: '', email: '', subject: '', message: '' }

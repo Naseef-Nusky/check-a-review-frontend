@@ -203,24 +203,40 @@ export const PUBLIC_ROUTE_SEO = [
     test: (path) => path === '/privacy',
     meta: {
       title: 'Privacy Policy',
-      description: `How ${APP_NAME} collects, uses, and protects personal data for reviewers and businesses.`,
+      description: 'CheckAReview Privacy Policy: how we collect, use, and protect personal data on our open review platform.',
       path: '/privacy',
     },
   },
   {
     test: (path) => path === '/terms',
     meta: {
-      title: 'Terms for reviewers',
-      description: `Terms of use for reviewers on ${APP_NAME}, including accounts, reviews, and moderation.`,
+      title: 'Terms & Conditions',
+      description: 'Terms and conditions for Check a Review services, including commencement, fees, feedback, and data protection.',
       path: '/terms',
     },
   },
   {
     test: (path) => path === '/terms/business',
     meta: {
-      title: 'Business Terms',
-      description: `Legal terms for business plans on ${APP_NAME}, including subscriptions, widgets, and invitations.`,
+      title: 'Terms & Conditions',
+      description: 'Terms and conditions for Check a Review services, including commencement, fees, feedback, and data protection.',
       path: '/terms/business',
+    },
+  },
+  {
+    test: (path) => path === '/posting-guidelines',
+    meta: {
+      title: 'Posting Guidelines',
+      description: 'CheckAReview posting guidelines for authentic, respectful, and genuine reviews.',
+      path: '/posting-guidelines',
+    },
+  },
+  {
+    test: (path) => path === '/cookies',
+    meta: {
+      title: 'Cookie Policy',
+      description: 'Cookie Policy for CheckAReview: how we use cookies and similar technologies on our website.',
+      path: '/cookies',
     },
   },
   {

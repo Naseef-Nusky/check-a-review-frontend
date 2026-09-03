@@ -32,7 +32,8 @@ const sections = [
     links: [
       { to: '/register', label: 'Create a customer account' },
       { to: '/privacy', label: 'Privacy Policy' },
-      { to: '/terms', label: 'Terms of Use' },
+      { to: '/terms', label: 'Terms & Conditions' },
+      { to: '/posting-guidelines', label: 'Posting Guidelines' },
       { to: '/contact', label: 'Get support' },
     ],
   },
@@ -40,7 +41,8 @@ const sections = [
     title: 'For businesses',
     links: [
       { href: `${BUSINESS_PORTAL_URL}/setup`, label: 'Register your business' },
-      { to: '/terms/business', label: 'Business Terms' },
+      { to: '/terms/business', label: 'Terms & Conditions' },
+      { to: '/cookies', label: 'Cookie Policy' },
       { href: `${BUSINESS_PORTAL_URL}/pricing`, label: 'Plans & pricing' },
     ],
   },

@@ -26,9 +26,9 @@ const footerLinks = {
   ],
   Legal: [
     { to: '/privacy', label: 'Privacy Policy' },
-    { to: '/terms', label: 'Terms for reviewers' },
-    { to: '/terms/business', label: 'Terms of Use & Sale for Businesses' },
-    { to: '/trust-centre', label: 'Trust Centre' },
+    { to: '/terms', label: 'Terms & Conditions' },
+    { to: '/posting-guidelines', label: 'Posting Guidelines' },
+    { to: '/cookies', label: 'Cookie Policy' },
   ],
 }
 
@@ -83,6 +83,9 @@ export default function Footer() {
             </Link>
             <Link to="/terms" className="text-slate-400 transition hover:text-white">
               Terms
+            </Link>
+            <Link to="/cookies" className="text-slate-400 transition hover:text-white">
+              Cookie Preferences
             </Link>
             <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
               <Mail className="h-4 w-4" strokeWidth={1.5} />
