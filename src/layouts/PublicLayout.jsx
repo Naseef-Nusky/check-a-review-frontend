@@ -8,7 +8,7 @@ export default function PublicLayout() {
     <div className="flex min-h-screen flex-col">
       <PublicRouteMeta />
       <Header />
-      <main className="min-w-0 flex-1 overflow-x-hidden">
+      <main className="min-w-0 flex-1 overflow-x-clip">
         <Outlet />
       </main>
       <Footer />

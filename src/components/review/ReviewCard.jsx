@@ -101,7 +101,7 @@ export default function ReviewCard({
     : null)
 
   return (
-    <article className="card p-6 sm:p-7">
+    <article className="card p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
           <ProfileAvatar name={author} src={review.authorAvatar} size="lg" />
@@ -136,7 +136,7 @@ export default function ReviewCard({
       </div>
 
       {review.title && (
-        <h4 className="mt-5 text-lg font-semibold tracking-tight text-ink">{review.title}</h4>
+        <h4 className="mt-4 text-base font-semibold tracking-tight text-ink">{review.title}</h4>
       )}
       <p className="mt-2 text-sm leading-relaxed text-slate-600">{review.content}</p>
 
@@ -146,7 +146,7 @@ export default function ReviewCard({
         </p>
       )}
 
-      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <button
           type="button"
           onClick={handleHelpful}

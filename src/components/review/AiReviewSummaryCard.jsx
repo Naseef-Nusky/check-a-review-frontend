@@ -14,9 +14,9 @@ function sentimentLabel(sentiment) {
 export default function AiReviewSummaryCard({ summary, loading, className = '' }) {
   if (loading) {
     return (
-      <div className={`rounded-2xl border border-border bg-white p-5 ${className}`}>
+      <div className={`rounded-2xl border border-border bg-white p-4 lg:p-3.5 ${className}`}>
         <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">AI summary</p>
-        <p className="mt-3 text-sm text-ink-muted">Summarizing customer reviews…</p>
+        <p className="mt-2 text-sm text-ink-muted">Summarizing customer reviews…</p>
       </div>
     )
   }
@@ -29,14 +29,14 @@ export default function AiReviewSummaryCard({ summary, loading, className = '' }
     (summary.cons?.length || 0) > 0
 
   return (
-    <div className={`rounded-2xl border border-border bg-gradient-to-br from-primary-50/80 via-white to-slate-50 p-5 ${className}`}>
+    <div className={`rounded-2xl border border-border bg-gradient-to-br from-primary-50/80 via-white to-slate-50 p-4 lg:p-3.5 ${className}`}>
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">AI summary</p>
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tone.className}`}>
           {tone.text}
         </span>
       </div>
-      <p className="mt-3 text-sm leading-relaxed text-ink">{summary.summary}</p>
+      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink">{summary.summary}</p>
 
       {hasLists ? (
         <div className="mt-4 space-y-3">
@@ -44,7 +44,7 @@ export default function AiReviewSummaryCard({ summary, loading, className = '' }
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Highlights</p>
               <ul className="mt-1.5 flex flex-wrap gap-2">
-                {summary.highlights.map((item) => (
+                {summary.highlights.slice(0, 3).map((item) => (
                   <li
                     key={item}
                     className="rounded-full border border-border bg-white px-2.5 py-1 text-xs text-ink"

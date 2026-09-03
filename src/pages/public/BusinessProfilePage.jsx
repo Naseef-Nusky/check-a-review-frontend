@@ -134,23 +134,23 @@ export default function BusinessProfilePage() {
     .join(' ')
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:flex lg:h-[calc(100dvh-3.5rem)] lg:flex-col lg:overflow-hidden lg:px-8 lg:py-3">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-6">
       <PageMeta
         title={`${business.name} reviews & ratings`}
         description={profileDescription}
         path={profilePath}
         image={logoSrc || undefined}
       />
-      <div className="flex min-h-0 flex-1 flex-col rounded-3xl border border-border bg-white shadow-sm lg:overflow-hidden">
+      <div className="flex flex-col rounded-3xl border border-border bg-white shadow-sm">
         <div className="sticky top-16 z-30 shrink-0 lg:static lg:top-auto">
           <div className="relative isolate overflow-hidden rounded-t-3xl border-b border-white/10 shadow-md">
             <div
               className="absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 bg-slate-900 bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 lg:inset-0 lg:w-full lg:translate-x-0"
               aria-hidden="true"
             />
-            <div className="relative px-6 py-6 sm:px-10 sm:py-7 lg:py-5">
+            <div className="relative px-6 py-6 sm:px-10 sm:py-7 lg:py-4">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800 lg:h-16 lg:w-16 lg:text-xl">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white text-2xl font-semibold text-slate-800 lg:h-14 lg:w-14 lg:text-lg">
                   {!logoFailed && logoSrc ? (
                     <img
                       src={logoSrc}
@@ -163,14 +163,14 @@ export default function BusinessProfilePage() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1 text-white">
-                  <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{business.name}</h1>
+                  <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl lg:text-2xl">{business.name}</h1>
                   <p className="mt-1 text-slate-300">{business.category}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 lg:mt-2">
                     <StarRating rating={rating} showValue className="[&_span]:text-white" />
                     <span className="text-sm text-slate-300">{reviewCount} reviews</span>
                     <Badge tone="brand">Trust score {trustScore}%</Badge>
                   </div>
-                  <div className="mt-5">
+                  <div className="mt-5 lg:mt-3">
                     <Link
                       to={reviewActionHref}
                       className="inline-flex rounded-full bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
@@ -184,12 +184,12 @@ export default function BusinessProfilePage() {
           </div>
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-8 p-6 sm:p-10 lg:grid-cols-[1.4fr_0.8fr] lg:overflow-hidden lg:p-6">
-          <div className="flex min-h-0 flex-col lg:overflow-hidden">
+        <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)] lg:items-start lg:p-8">
+          <div className="flex min-h-0 flex-col">
             <div className="shrink-0">
               <AiReviewSummaryCard summary={aiSummary} loading={aiSummaryLoading} />
 
-              <div className="mt-6">
+              <div className="mt-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <h2 className="text-lg font-semibold text-ink">Customer reviews</h2>
                   <input
@@ -213,8 +213,8 @@ export default function BusinessProfilePage() {
               </div>
             </div>
 
-            <div className="mt-4 min-h-[28rem] flex-1 overflow-y-auto pr-1 sm:min-h-[32rem] lg:min-h-0">
-              <div className="space-y-4 pb-1">
+            <div className="mt-4">
+              <div className="space-y-4">
                 {filteredReviews.length === 0 ? (
                   <div className="rounded-2xl border border-border px-4 py-8 text-center text-sm text-ink-muted">
                     No reviews match your filters.
@@ -248,7 +248,7 @@ export default function BusinessProfilePage() {
             </div>
           </div>
 
-          <aside className="flex min-h-0 flex-col gap-4 lg:overflow-y-auto lg:pr-1">
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:z-20 lg:self-start">
             <div className="rounded-2xl border border-border p-5">
               <h3 className="font-semibold text-ink">Rating</h3>
               <div className="mt-4 flex items-end gap-3">
