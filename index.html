@@ -12,6 +12,10 @@
       name="description"
       content="Discover verified customer reviews, compare business reputation, and make confident decisions with Check A Review."
     />
+    <meta
+      name="keywords"
+      content="Check A Review, CheckAReview, customer reviews, business ratings, verified reviews, trust score"
+    />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Check A Review" />
@@ -26,6 +30,32 @@
       name="twitter:description"
       content="Discover verified customer reviews, compare business reputation, and make confident decisions with Check A Review."
     />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Check A Review",
+            "alternateName": ["CheckAReview", "Check a Review", "checkareview.com"],
+            "url": "https://checkareview.com",
+            "logo": "https://checkareview.com/logo-check-a-review.png",
+            "email": "info@checkareview.com"
+          },
+          {
+            "@type": "WebSite",
+            "name": "Check A Review",
+            "alternateName": ["CheckAReview", "Check a Review"],
+            "url": "https://checkareview.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://checkareview.com/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />

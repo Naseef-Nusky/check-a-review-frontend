@@ -54,6 +54,7 @@ export function applyPageMeta({
   robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
   image,
   type = 'website',
+  jsonLd,
 } = {}) {
   const pageTitle = formatPageTitle(title)
   const canonical = buildCanonical(path)
@@ -63,6 +64,10 @@ export function applyPageMeta({
   document.documentElement.lang = 'en'
 
   upsertMeta('description', description)
+  upsertMeta(
+    'keywords',
+    'Check A Review, CheckAReview, customer reviews, business ratings, verified reviews, trust score',
+  )
   upsertMeta('robots', robots)
   upsertMeta('googlebot', robots.startsWith('noindex') ? 'noindex, nofollow' : 'index, follow')
 
@@ -80,28 +85,154 @@ export function applyPageMeta({
   upsertMeta('twitter:image', imageUrl)
 
   upsertLink('canonical', canonical)
+
+  const existingPageLd = document.getElementById('page-jsonld')
+  if (jsonLd) {
+    let script = existingPageLd
+    if (!script) {
+      script = document.createElement('script')
+      script.id = 'page-jsonld'
+      script.type = 'application/ld+json'
+      document.head.appendChild(script)
+    }
+    script.textContent = JSON.stringify(jsonLd)
+  } else if (existingPageLd) {
+    existingPageLd.remove()
+  }
 }
 
 export function applySiteDefaults() {
   upsertMeta('application-name', APP_NAME)
   upsertMeta('theme-color', '#0f172a')
   upsertMeta('google-site-verification', GOOGLE_SITE_VERIFICATION)
+  upsertMeta(
+    'keywords',
+    'Check A Review, CheckAReview, customer reviews, business ratings, verified reviews',
+  )
 
-  if (!document.getElementById('site-jsonld')) {
-    const script = document.createElement('script')
+  const siteLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${siteOrigin()}/#organization`,
+        name: APP_NAME,
+        alternateName: ['CheckAReview', 'Check a Review', 'checkareview.com'],
+        url: siteOrigin(),
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteOrigin()}/logo-check-a-review.png`,
+        },
+        email: CONTACT_EMAIL,
+        description: DEFAULT_SEO.description,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: '125 Deansgate',
+          addressLocality: 'Greater Manchester',
+          postalCode: 'M3 2BY',
+          addressCountry: 'GB',
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${siteOrigin()}/#website`,
+        name: APP_NAME,
+        alternateName: ['CheckAReview', 'Check a Review'],
+        url: siteOrigin(),
+        description: DEFAULT_SEO.description,
+        publisher: { '@id': `${siteOrigin()}/#organization` },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${siteOrigin()}/search?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  }
+
+  let script = document.getElementById('site-jsonld')
+  if (!script) {
+    script = document.createElement('script')
     script.id = 'site-jsonld'
     script.type = 'application/ld+json'
-    script.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: APP_NAME,
-      url: siteOrigin(),
-      logo: `${siteOrigin()}/favicon.svg`,
-      email: CONTACT_EMAIL,
-      description: DEFAULT_SEO.description,
-    })
     document.head.appendChild(script)
   }
+  script.textContent = JSON.stringify(siteLd)
+}
+
+/**
+ * Build LocalBusiness + AggregateRating (+ sample Review) JSON-LD for Google rich results.
+ */
+export function buildBusinessJsonLd(business, reviews = []) {
+  if (!business) return null
+
+  const rating = Number(business.average_rating || 0)
+  const reviewCount = Number(business.review_count || 0)
+  const path = `/businesses/${business.slug || business.id}`
+  const pageUrl = buildCanonical(path)
+  const logo = business.logo_url
+    ? business.logo_url.startsWith('http')
+      ? business.logo_url
+      : `${siteOrigin()}${business.logo_url.startsWith('/') ? '' : '/'}${business.logo_url}`
+    : undefined
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${pageUrl}#business`,
+    name: business.name,
+    url: pageUrl,
+    description:
+      business.description ||
+      `Customer reviews and ratings for ${business.name} on Check A Review.`,
+    image: logo,
+    category: business.category || undefined,
+    sameAs: business.website ? [business.website] : undefined,
+  }
+
+  if (reviewCount > 0 && rating > 0) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: Number(rating.toFixed(2)),
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: reviewCount,
+      reviewCount,
+    }
+  }
+
+  const published = (Array.isArray(reviews) ? reviews : [])
+    .filter((r) => r && (r.status === 'published' || !r.status) && r.content)
+    .slice(0, 10)
+
+  if (published.length > 0) {
+    schema.review = published.map((r) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: r.author_name || 'Customer',
+      },
+      datePublished: r.created_at || r.updated_at,
+      name: r.title || undefined,
+      reviewBody: r.content,
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: Number(r.rating) || 0,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: APP_NAME,
+        url: siteOrigin(),
+      },
+    }))
+  }
+
+  return schema
 }
 
 const NOINDEX = 'noindex, nofollow'

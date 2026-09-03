@@ -10,6 +10,7 @@ import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
 import { resolveMediaUrl, formatExternalUrl } from '../../utils/constants'
+import { buildBusinessJsonLd } from '../../utils/seo'
 
 export default function BusinessProfilePage() {
   const { id } = useParams()
@@ -105,6 +106,11 @@ export default function BusinessProfilePage() {
     )
   }, [reviews, query, selectedStars])
 
+  const businessJsonLd = useMemo(
+    () => (business ? buildBusinessJsonLd(business, reviews) : null),
+    [business, reviews],
+  )
+
   if (loading) {
     return <div className="mx-auto max-w-7xl px-4 py-16 text-sm text-ink-muted">Loading business...</div>
   }
@@ -125,7 +131,7 @@ export default function BusinessProfilePage() {
   const logoSrc = resolveMediaUrl(business.logo_url)
   const profilePath = `/businesses/${business.slug || id}`
   const profileDescription = [
-    `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'} for ${business.name}.`,
+    `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'} for ${business.name} on Check A Review.`,
     rating > 0 ? `Average rating ${rating.toFixed(1)} out of 5.` : null,
     business.category ? `Listed in ${business.category}.` : null,
     trustScore > 0 ? `Trust score ${trustScore}%.` : null,
@@ -136,10 +142,11 @@ export default function BusinessProfilePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-6">
       <PageMeta
-        title={`${business.name} reviews & ratings`}
+        title={`${business.name} reviews & ratings | Check A Review`}
         description={profileDescription}
         path={profilePath}
         image={logoSrc || undefined}
+        jsonLd={businessJsonLd}
       />
       <div className="flex flex-col rounded-3xl border border-border bg-white shadow-sm">
         <div className="sticky top-16 z-30 shrink-0 lg:static lg:top-auto">
@@ -290,18 +297,6 @@ export default function BusinessProfilePage() {
                         className="break-all font-medium text-primary-700 hover:text-primary-800 hover:underline"
                       >
                         {business.website}
-                      </a>
-                    ) : (
-                      '—'
-                    )}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-ink-muted">Email</dt>
-                  <dd className="mt-1 text-ink">
-                    {business.email ? (
-                      <a href={`mailto:${business.email}`} className="break-all text-primary-700 hover:underline">
-                        {business.email}
                       </a>
                     ) : (
                       '—'
