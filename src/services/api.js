@@ -131,6 +131,7 @@ export const publicApi = {
   removeAvatar: () => api.delete('/auth/me/avatar'),
   deleteAccount: () => api.delete('/auth/me'),
   submitContact: (data) => api.post('/contact', data),
+  reportReview: (reviewId, data) => api.post(`/reviews/${reviewId}/report`, data),
 }
 
 export { ApiError }
