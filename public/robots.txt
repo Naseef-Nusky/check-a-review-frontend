@@ -14,5 +14,5 @@ Disallow: /businesses/*/write-review
 Disallow: /review-invite/
 Disallow: /api/
 
-# Live sitemap — updates automatically when businesses are published (no frontend redeploy)
-Sitemap: https://api.checkareview.com/api/sitemap.xml
+# Prefer same-host sitemap (proxied to live API by nginx or server.mjs)
+Sitemap: https://checkareview.com/sitemap.xml
