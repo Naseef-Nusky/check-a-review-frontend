@@ -131,7 +131,8 @@ export default function BusinessProfilePage() {
   const logoSrc = resolveMediaUrl(business.logo_url)
   const profilePath = `/businesses/${business.slug || id}`
   const profileDescription = [
-    `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'} for ${business.name} on Check A Review.`,
+    `${business.name} reviews on Check A Review.`,
+    `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'}.`,
     rating > 0 ? `Average rating ${rating.toFixed(1)} out of 5.` : null,
     business.category ? `Listed in ${business.category}.` : null,
     trustScore > 0 ? `Trust score ${trustScore}%.` : null,
@@ -142,7 +143,7 @@ export default function BusinessProfilePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-6">
       <PageMeta
-        title={`${business.name} reviews & ratings | Check A Review`}
+        title={`${business.name} Reviews | Check A Review`}
         description={profileDescription}
         path={profilePath}
         image={logoSrc || undefined}

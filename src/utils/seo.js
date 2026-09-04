@@ -184,12 +184,21 @@ export function buildBusinessJsonLd(business, reviews = []) {
     '@type': 'LocalBusiness',
     '@id': `${pageUrl}#business`,
     name: business.name,
+    alternateName: `${business.name} reviews`,
     url: pageUrl,
     description:
       business.description ||
-      `Customer reviews and ratings for ${business.name} on Check A Review.`,
+      `Read verified customer reviews and ratings for ${business.name} on Check A Review.`,
     image: logo,
     category: business.category || undefined,
+    telephone: business.phone || undefined,
+    email: business.email || undefined,
+    address: business.address
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: business.address,
+        }
+      : undefined,
     sameAs: business.website ? [business.website] : undefined,
   }
 
