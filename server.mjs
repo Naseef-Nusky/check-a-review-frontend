@@ -89,6 +89,17 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  // IndexNow key file (must be on the public site host)
+  if (/^\/[A-Za-z0-9_-]+\.txt$/.test(pathname)) {
+    const keyPath = path.join(distDir, pathname.slice(1))
+    if (fs.existsSync(keyPath)) {
+      serveFile(keyPath, res)
+      return
+    }
+    await proxy(`${apiOrigin}/api${pathname}`, res, 'text/plain; charset=utf-8')
+    return
+  }
+
   const businessMatch = pathname.match(/^\/businesses\/([^/]+)\/?$/)
   if (businessMatch && isBot) {
     const slug = businessMatch[1]

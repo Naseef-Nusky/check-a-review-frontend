@@ -175,17 +175,18 @@ export default function HomePage() {
         <div className="mx-auto max-w-4xl text-center">
           <p className="section-kicker text-primary-200">For business owners</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Build reputation with verified customer feedback
+            Create a free business profile
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
-            Claim your profile, respond to reviews, send invitations, and grow your reputation with Check A Review.
+            Yes — you can register on Check A Review at no cost to manage your reputation and respond to customer
+            reviews. Upgrade later only if you need more invitations, widgets, and insights.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <a href={`${BUSINESS_PORTAL_URL}/setup`}>
-              <Button>Register Your Business</Button>
+              <Button>Create free profile</Button>
             </a>
-            <a href={`${BUSINESS_PORTAL_URL}/login`}>
-              <Button variant="secondary">Business Dashboard</Button>
+            <a href={`${BUSINESS_PORTAL_URL}/pricing`}>
+              <Button variant="secondary">View pricing</Button>
             </a>
           </div>
         </div>
