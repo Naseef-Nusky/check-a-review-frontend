@@ -106,6 +106,17 @@ export const publicApi = {
   getFeaturedBusinesses: () => api.get('/businesses/featured'),
   getBusiness: (idOrSlug) => api.get(`/businesses/${idOrSlug}`),
   getBusinessReviewSummary: (idOrSlug) => api.get(`/businesses/${idOrSlug}/review-summary`),
+  submitBusinessClaim: (idOrSlug, data, files = []) => {
+    const formData = new FormData()
+    Object.entries(data || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) formData.append(key, value)
+    })
+    ;(files || []).forEach((file) => {
+      if (file) formData.append('attachments', file)
+    })
+    return api.upload(`/claims/businesses/${idOrSlug}/claim`, formData)
+  },
+  verifyBusinessClaimEmail: (token) => api.post('/claims/verify-email', { token }),
   getCategories: () => api.get('/businesses/categories'),
   getBusinessReviews: (businessId, limit = 20) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),

@@ -177,14 +177,27 @@ export default function BusinessProfilePage() {
                     <StarRating rating={rating} showValue className="[&_span]:text-white" />
                     <span className="text-sm text-slate-300">{reviewCount} reviews</span>
                     <Badge tone="brand">Trust score {trustScore}%</Badge>
+                    {business.claimed ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100 ring-1 ring-emerald-400/30">
+                        ✓ Verified claimed business
+                      </span>
+                    ) : null}
                   </div>
-                  <div className="mt-5 lg:mt-3">
+                  <div className="mt-5 flex flex-wrap gap-3 lg:mt-3">
                     <Link
                       to={reviewActionHref}
                       className="inline-flex rounded-full bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
                     >
                       {reviewActionLabel}
                     </Link>
+                    {!business.claimed ? (
+                      <Link
+                        to={`/businesses/${business.slug || id}/claim`}
+                        className="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
+                      >
+                        Claim this business
+                      </Link>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -322,6 +335,40 @@ export default function BusinessProfilePage() {
                 </div>
               </dl>
             </div>
+
+            {business.claimed ? (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+                <p className="text-sm font-semibold text-emerald-900">
+                  ✓ This business has claimed their Check A Review profile.
+                </p>
+                {(business.verified_contact || business.verified_identity || business.verified_ownership) ? (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-semibold text-ink">Confirmed details</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-ink-muted">
+                      This business has chosen to confirm specific details about their business with Check A Review.
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm text-ink">
+                      {business.verified_contact ? <li>✓ Business contact details</li> : null}
+                      {business.verified_identity ? <li>✓ User identity</li> : null}
+                      {business.verified_ownership ? <li>✓ Business ownership</li> : null}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-border p-5">
+                <h3 className="font-semibold text-ink">Own this business?</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                  Claim this profile for free to manage your reputation and respond to reviews.
+                </p>
+                <Link
+                  to={`/businesses/${business.slug || id}/claim`}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700"
+                >
+                  Claim this business
+                </Link>
+              </div>
+            )}
 
             <div className="rounded-2xl border border-border p-5">
               <h3 className="font-semibold text-ink">

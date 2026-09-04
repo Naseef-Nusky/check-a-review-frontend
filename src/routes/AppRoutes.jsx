@@ -8,6 +8,8 @@ import BusinessPortalRedirect from '../components/common/BusinessPortalRedirect'
 import HomePage from '../pages/public/HomePage'
 import SearchPage from '../pages/public/SearchPage'
 import BusinessProfilePage from '../pages/public/BusinessProfilePage'
+import ClaimBusinessPage from '../pages/public/ClaimBusinessPage'
+import ClaimVerifyPage from '../pages/public/ClaimVerifyPage'
 import WriteReviewPage from '../pages/public/WriteReviewPage'
 import ReviewInvitePage from '../pages/public/ReviewInvitePage'
 import CategoriesPage from '../pages/public/CategoriesPage'
@@ -65,6 +67,8 @@ export default function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="businesses/:id" element={<BusinessProfilePage />} />
+        <Route path="businesses/:id/claim" element={<ClaimBusinessPage />} />
+        <Route path="claim/verify" element={<ClaimVerifyPage />} />
         <Route path="businesses/:id/write-review" element={<WriteReviewPage />} />
         <Route path="review-invite/:token" element={<ReviewInvitePage />} />
         <Route path="categories" element={<CategoriesPage />} />
