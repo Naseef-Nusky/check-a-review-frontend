@@ -66,6 +66,9 @@ export default function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
         <Route path="search" element={<SearchPage />} />
+        <Route path="review/:domain" element={<BusinessProfilePage />} />
+        <Route path="review/:domain/claim" element={<ClaimBusinessPage />} />
+        <Route path="review/:domain/write-review" element={<WriteReviewPage />} />
         <Route path="businesses/:id" element={<BusinessProfilePage />} />
         <Route path="businesses/:id/claim" element={<ClaimBusinessPage />} />
         <Route path="claim/verify" element={<ClaimVerifyPage />} />

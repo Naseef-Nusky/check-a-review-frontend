@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PageMeta from '../../components/common/PageMeta'
 import { publicApi } from '../../services/api'
+import { businessProfilePath, businessClaimPath } from '../../utils/constants'
 
 const initialForm = {
   fullName: '',
@@ -15,7 +16,8 @@ const initialForm = {
 }
 
 export default function ClaimBusinessPage() {
-  const { id } = useParams()
+  const { id, domain } = useParams()
+  const identifier = domain || id
   const [business, setBusiness] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -29,7 +31,7 @@ export default function ClaimBusinessPage() {
     setLoading(true)
     setError('')
     publicApi
-      .getBusiness(id)
+      .getBusiness(identifier)
       .then((profile) => {
         if (!active) return
         setBusiness(profile)
@@ -46,7 +48,7 @@ export default function ClaimBusinessPage() {
     return () => {
       active = false
     }
-  }, [id])
+  }, [identifier])
 
   const onChange = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
 
@@ -60,7 +62,7 @@ export default function ClaimBusinessPage() {
     setError('')
     try {
       const result = await publicApi.submitBusinessClaim(
-        business.slug || business.id || id,
+        business.slug || business.id || identifier,
         {
           fullName: form.fullName,
           email: form.email,
@@ -97,7 +99,7 @@ export default function ClaimBusinessPage() {
   if (submitted) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <PageMeta title={`Claim request submitted | Check A Review`} path={`/businesses/${id}/claim`} />
+        <PageMeta title={`Claim request submitted | Check A Review`} path={businessClaimPath(business)} />
         <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary-600">Claim request created</p>
           <h1 className="mt-2 text-3xl font-semibold text-ink">Check your email</h1>
@@ -107,7 +109,7 @@ export default function ClaimBusinessPage() {
           </p>
           <p className="mt-3 text-sm text-ink-muted">Status: Pending · Email: Unverified until you click the link</p>
           <Link
-            to={`/businesses/${business.slug || id}`}
+            to={businessProfilePath(business)}
             className="mt-8 inline-flex rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
           >
             Back to profile
@@ -122,7 +124,7 @@ export default function ClaimBusinessPage() {
       <PageMeta
         title={`Claim ${business?.name || 'business'} | Check A Review`}
         description={`Claim the Check A Review profile for ${business?.name || 'this business'}.`}
-        path={`/businesses/${id}/claim`}
+        path={business ? businessClaimPath(business) : `/businesses/${identifier}/claim`}
       />
       <div className="rounded-3xl border border-border bg-white p-6 shadow-sm sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary-600">Claim this business</p>

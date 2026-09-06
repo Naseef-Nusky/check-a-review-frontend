@@ -18,7 +18,8 @@ function todayDateValue() {
 }
 
 export default function WriteReviewPage() {
-  const { id } = useParams()
+  const { id, domain } = useParams()
+  const identifier = domain || id
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { isAuthenticated, isCustomer } = useAuth()
@@ -42,8 +43,8 @@ export default function WriteReviewPage() {
     if (!isAuthenticated) {
       const invite = searchParams.get('invite')
       const returnTo = invite
-        ? `/businesses/${id}/write-review?invite=${encodeURIComponent(invite)}`
-        : `/businesses/${id}/write-review`
+        ? `/businesses/${identifier}/write-review?invite=${encodeURIComponent(invite)}`
+        : `/businesses/${identifier}/write-review`
       navigate(`/login?redirect=${encodeURIComponent(returnTo)}`, { replace: true })
       return
     }
@@ -51,7 +52,7 @@ export default function WriteReviewPage() {
       setError('Only user accounts can write reviews. Please sign in with a user account.')
       setLoading(false)
     }
-  }, [isAuthenticated, isCustomer, id, navigate, searchParams])
+  }, [isAuthenticated, isCustomer, identifier, navigate, searchParams])
 
   useEffect(() => {
     if (!isAuthenticated || !isCustomer) return
@@ -62,7 +63,7 @@ export default function WriteReviewPage() {
     setLogoFailed(false)
 
     publicApi
-      .getBusiness(id)
+      .getBusiness(identifier)
       .then(async (profile) => {
         if (!active) return
         setBusiness(profile)
@@ -74,8 +75,8 @@ export default function WriteReviewPage() {
             (item) =>
               String(item.business_id) === String(profile.id) ||
               String(item.business_slug) === String(profile.slug) ||
-              String(item.business_slug) === String(id) ||
-              String(item.business_id) === String(id),
+              String(item.business_slug) === String(identifier) ||
+              String(item.business_id) === String(identifier),
           )
           if (existing?.id) {
             navigate(`/users/reviews/${existing.id}/edit`, { replace: true })
@@ -96,7 +97,7 @@ export default function WriteReviewPage() {
     return () => {
       active = false
     }
-  }, [id, isAuthenticated, isCustomer, navigate])
+  }, [identifier, isAuthenticated, isCustomer, navigate])
 
   useEffect(() => {
     const preset = Number(searchParams.get('rating') || 0)
@@ -152,7 +153,7 @@ export default function WriteReviewPage() {
       )
 
       setTimeout(() => {
-        navigate(`/businesses/${business.slug || business.id}`)
+        navigate(businessProfilePath(business))
       }, 900)
     } catch (err) {
       setError(err.message || 'Failed to submit review')
@@ -366,7 +367,7 @@ export default function WriteReviewPage() {
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between sm:border-0 sm:pt-0">
             <Link
-              to={`/businesses/${business?.slug || id}`}
+              to={businessProfilePath(business || { slug: identifier, id: identifier })}
               className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-center text-sm font-medium text-slate-600 hover:text-slate-900 sm:min-h-0 sm:justify-start sm:px-0"
             >
               Cancel

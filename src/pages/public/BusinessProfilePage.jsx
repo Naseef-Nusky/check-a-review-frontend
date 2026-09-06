@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import StarRating from '../../components/common/StarRating'
 import ReviewCard from '../../components/review/ReviewCard'
 import RatingDistribution from '../../components/review/RatingDistribution'
@@ -9,11 +9,20 @@ import PageMeta from '../../components/common/PageMeta'
 import ReviewScreeningNote from '../../components/common/ReviewScreeningNote'
 import { useAuth } from '../../context/AuthContext'
 import { publicApi } from '../../services/api'
-import { resolveMediaUrl, formatExternalUrl } from '../../utils/constants'
+import {
+  resolveMediaUrl,
+  formatExternalUrl,
+  businessProfilePath,
+  businessClaimPath,
+  businessWriteReviewPath,
+} from '../../utils/constants'
 import { buildBusinessJsonLd } from '../../utils/seo'
 
 export default function BusinessProfilePage() {
-  const { id } = useParams()
+  const { id, domain } = useParams()
+  const identifier = domain || id
+  const navigate = useNavigate()
+  const location = useLocation()
   const { isAuthenticated, isCustomer } = useAuth()
   const [business, setBusiness] = useState(null)
   const [reviews, setReviews] = useState([])
@@ -28,9 +37,12 @@ export default function BusinessProfilePage() {
 
   useEffect(() => {
     setLogoFailed(false)
-  }, [business?.logo_url, id])
+  }, [business?.logo_url, identifier])
 
-  const writeReviewPath = `/businesses/${id}/write-review`
+  const writeReviewPath = business
+    ? businessWriteReviewPath(business)
+    : `/businesses/${identifier}/write-review`
+  const claimPath = business ? businessClaimPath(business) : `/businesses/${identifier}/claim`
   const reviewActionHref = myReviewId
     ? `/users/reviews/${myReviewId}/edit`
     : isAuthenticated && isCustomer
@@ -50,9 +62,18 @@ export default function BusinessProfilePage() {
 
     ;(async () => {
       try {
-        const profile = await publicApi.getBusiness(id)
+        const profile = await publicApi.getBusiness(identifier)
         if (!active) return
         setBusiness(profile)
+        const canonical = businessProfilePath(profile)
+        if (
+          location.pathname.startsWith('/businesses/') &&
+          canonical.startsWith('/review/') &&
+          !location.pathname.includes('/claim') &&
+          !location.pathname.includes('/write-review')
+        ) {
+          navigate(canonical, { replace: true })
+        }
         const [reviewData, summary] = await Promise.all([
           publicApi.getBusinessReviews(profile.id),
           publicApi.getBusinessReviewSummary(profile.id).catch(() => null),
@@ -89,7 +110,7 @@ export default function BusinessProfilePage() {
     return () => {
       active = false
     }
-  }, [id, isAuthenticated, isCustomer])
+  }, [identifier, isAuthenticated, isCustomer, location.pathname, navigate])
 
   const filteredReviews = useMemo(() => {
     let list = reviews
@@ -129,7 +150,7 @@ export default function BusinessProfilePage() {
   const reviewCount = Number(business.review_count || 0)
   const trustScore = Math.round(Number(business.trust_score || 0))
   const logoSrc = resolveMediaUrl(business.logo_url)
-  const profilePath = `/businesses/${business.slug || id}`
+  const profilePath = businessProfilePath(business)
   const profileDescription = [
     `${business.name} reviews on Check A Review.`,
     `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'}.`,
@@ -192,7 +213,7 @@ export default function BusinessProfilePage() {
                     </Link>
                     {!business.claimed ? (
                       <Link
-                        to={`/businesses/${business.slug || id}/claim`}
+                        to={claimPath}
                         className="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
                       >
                         Claim this business
@@ -362,7 +383,7 @@ export default function BusinessProfilePage() {
                   Claim this profile for free to manage your reputation and respond to reviews.
                 </p>
                 <Link
-                  to={`/businesses/${business.slug || id}/claim`}
+                  to={claimPath}
                   className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700"
                 >
                   Claim this business

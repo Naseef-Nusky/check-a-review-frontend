@@ -171,7 +171,17 @@ export function buildBusinessJsonLd(business, reviews = []) {
 
   const rating = Number(business.average_rating || 0)
   const reviewCount = Number(business.review_count || 0)
-  const path = `/businesses/${business.slug || business.id}`
+  const path = (() => {
+    const website = business.website || ''
+    try {
+      let host = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`).hostname.toLowerCase()
+      host = host.replace(/^www\./, '')
+      if (host.includes('.')) return `/review/www.${host}`
+    } catch {
+      // fall through
+    }
+    return `/businesses/${business.slug || business.id}`
+  })()
   const pageUrl = buildCanonical(path)
   const logo = business.logo_url
     ? business.logo_url.startsWith('http')

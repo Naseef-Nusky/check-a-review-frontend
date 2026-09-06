@@ -111,6 +111,17 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  const reviewDomainMatch = pathname.match(/^\/review\/([^/]+)\/?$/)
+  if (reviewDomainMatch && isBot) {
+    const domain = reviewDomainMatch[1]
+    await proxy(
+      `${apiOrigin}/api/prerender/review/${encodeURIComponent(domain)}`,
+      res,
+      'text/html; charset=utf-8',
+    )
+    return
+  }
+
   const safePath = path.normalize(pathname).replace(/^(\.\.[/\\])+/, '')
   const filePath = path.join(distDir, safePath === '/' ? 'index.html' : safePath)
 

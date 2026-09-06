@@ -60,11 +60,42 @@ export function formatExternalUrl(url) {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`
 }
 
+function toApexDomain(input) {
+  let raw = String(input || '')
+    .trim()
+    .toLowerCase()
+  if (!raw) return ''
+  raw = raw.replace(/\s+/g, '')
+  if (!/^https?:\/\//i.test(raw)) raw = `https://${raw}`
+  try {
+    let hostname = new URL(raw).hostname.toLowerCase()
+    hostname = hostname.replace(/^www\./, '').replace(/\.$/, '')
+    return hostname.includes('.') ? hostname : ''
+  } catch {
+    return ''
+  }
+}
+
+/** Trustpilot-style path: /review/www.tesco.com */
 export function businessProfilePath(business) {
   if (!business) return '/search'
+  const website = business.website || business.business_website || ''
+  const apex = toApexDomain(website)
+  if (apex) return `/review/www.${apex}`
+
   const slug = business.slug || business.business_slug
   const id = business.id || business.business_id
   if (slug) return `/businesses/${slug}`
   if (id) return `/businesses/${id}`
   return '/search'
+}
+
+export function businessClaimPath(business) {
+  return `${businessProfilePath(business)}/claim`
+}
+
+export function businessWriteReviewPath(business, inviteToken) {
+  const base = `${businessProfilePath(business)}/write-review`
+  if (!inviteToken) return base
+  return `${base}?invite=${encodeURIComponent(inviteToken)}`
 }
