@@ -47,6 +47,29 @@ function upsertLink(rel, href) {
   tag.setAttribute('href', href)
 }
 
+const DEFAULT_KEYWORDS =
+  'check a review, checkareview, customer reviews, company reviews, business reviews, check reviews, verified reviews'
+
+function clearExtraMetaTags() {
+  document.head.querySelectorAll('meta[data-car-extra-meta="1"]').forEach((el) => el.remove())
+}
+
+function applyExtraMetaTags(extraTags = []) {
+  clearExtraMetaTags()
+  ;(Array.isArray(extraTags) ? extraTags : []).forEach((tag) => {
+    const content = tag?.content != null ? String(tag.content).trim() : ''
+    const name = tag?.name ? String(tag.name).trim() : ''
+    const property = tag?.property ? String(tag.property).trim() : ''
+    if (!content || (!name && !property)) return
+    const el = document.createElement('meta')
+    el.setAttribute('data-car-extra-meta', '1')
+    if (name) el.setAttribute('name', name)
+    if (property) el.setAttribute('property', property)
+    el.setAttribute('content', content)
+    document.head.appendChild(el)
+  })
+}
+
 export function applyPageMeta({
   title = DEFAULT_SEO.title,
   description = DEFAULT_SEO.description,
@@ -55,19 +78,19 @@ export function applyPageMeta({
   image,
   type = 'website',
   jsonLd,
+  keywords,
+  extraTags,
 } = {}) {
   const pageTitle = formatPageTitle(title)
   const canonical = buildCanonical(path)
   const imageUrl = image || `${siteOrigin()}/favicon.svg`
+  const keywordValue = String(keywords || '').trim() || DEFAULT_KEYWORDS
 
   document.title = pageTitle
   document.documentElement.lang = 'en'
 
   upsertMeta('description', description)
-  upsertMeta(
-    'keywords',
-    'Check A Review, CheckAReview, customer reviews, business ratings, verified reviews, trust score',
-  )
+  upsertMeta('keywords', keywordValue)
   upsertMeta('robots', robots)
   upsertMeta('googlebot', robots.startsWith('noindex') ? 'noindex, nofollow' : 'index, follow')
 
@@ -85,6 +108,7 @@ export function applyPageMeta({
   upsertMeta('twitter:image', imageUrl)
 
   upsertLink('canonical', canonical)
+  applyExtraMetaTags(extraTags)
 
   const existingPageLd = document.getElementById('page-jsonld')
   if (jsonLd) {
@@ -480,5 +504,6 @@ export function getPublicRouteSeo(pathname, search = '') {
 }
 
 export function isDynamicPublicPage(pathname) {
-  return /^\/businesses\/[^/]+$/.test(pathname || '')
+  const path = pathname || ''
+  return /^\/businesses\/[^/]+$/.test(path) || /^\/review\/[^/]+$/.test(path)
 }

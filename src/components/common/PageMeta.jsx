@@ -9,16 +9,18 @@ export default function PageMeta({
   image,
   type = 'website',
   jsonLd,
+  keywords,
+  extraTags,
 }) {
   useEffect(() => {
-    applyPageMeta({ title, description, path, robots, image, type, jsonLd })
+    applyPageMeta({ title, description, path, robots, image, type, jsonLd, keywords, extraTags })
     return () => {
       // Clear page-specific schema when leaving dynamic pages
       if (jsonLd) {
         document.getElementById('page-jsonld')?.remove()
       }
     }
-  }, [title, description, path, robots, image, type, jsonLd])
+  }, [title, description, path, robots, image, type, jsonLd, keywords, extraTags])
 
   return null
 }

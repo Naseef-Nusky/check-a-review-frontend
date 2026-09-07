@@ -164,8 +164,10 @@ export default function BusinessProfilePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-6">
       <PageMeta
-        title={`${business.name} Reviews | Check A Review`}
-        description={profileDescription}
+        title={String(business.seo_title || '').trim() || `${business.name} Reviews | Check A Review`}
+        description={String(business.seo_description || '').trim() || profileDescription}
+        keywords={String(business.seo_keywords || '').trim() || undefined}
+        extraTags={Array.isArray(business.seo_extra_tags) ? business.seo_extra_tags : undefined}
         path={profilePath}
         image={logoSrc || undefined}
         jsonLd={businessJsonLd}

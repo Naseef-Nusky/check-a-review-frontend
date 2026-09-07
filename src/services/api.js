@@ -104,6 +104,7 @@ export const publicApi = {
     return api.get(`/businesses/search${qs ? `?${qs}` : ''}`)
   },
   getFeaturedBusinesses: () => api.get('/businesses/featured'),
+  getSiteSeo: () => api.get('/seo/site'),
   getBusiness: (idOrSlug) => api.get(`/businesses/${idOrSlug}`),
   getBusinessReviewSummary: (idOrSlug) => api.get(`/businesses/${idOrSlug}/review-summary`),
   submitBusinessClaim: (idOrSlug, data, files = []) => {
