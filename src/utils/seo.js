@@ -1,9 +1,11 @@
 import { APP_NAME, CONTACT_EMAIL, GOOGLE_SITE_VERIFICATION, PUBLIC_SITE_URL } from './constants'
 
 export const DEFAULT_SEO = {
-  title: `${APP_NAME} — Trusted customer reviews`,
+  title: 'Check A Review | checkareview.com — Trusted customer reviews',
   description:
-    'Discover verified customer reviews, compare business reputation, and make confident decisions with Check A Review.',
+    'Check A Review (checkareview.com) — read verified customer reviews, compare business ratings, and find companies you can trust. Search company reviews and business reviews.',
+  keywords:
+    'check a review, checkareview, check a review website, CheckAReview, customer reviews, company reviews, business reviews',
 }
 
 export function siteOrigin() {
@@ -84,7 +86,7 @@ export function applyPageMeta({
   const pageTitle = formatPageTitle(title)
   const canonical = buildCanonical(path)
   const imageUrl = image || `${siteOrigin()}/favicon.svg`
-  const keywordValue = String(keywords || '').trim() || DEFAULT_KEYWORDS
+  const keywordValue = String(keywords || '').trim() || DEFAULT_SEO.keywords || DEFAULT_KEYWORDS
 
   document.title = pageTitle
   document.documentElement.lang = 'en'
@@ -285,9 +287,11 @@ export const PUBLIC_ROUTE_SEO = [
   {
     test: (path) => path === '/',
     meta: {
-      title: 'Trusted customer reviews',
+      title: 'Check A Review | checkareview.com — Trusted customer reviews',
       description:
-        'Find businesses you can trust. Search verified reviews, compare ratings, and make better decisions with Check A Review.',
+        'Check A Review (checkareview.com) — read verified customer reviews, compare business ratings, and find companies you can trust. Search company reviews and business reviews.',
+      keywords:
+        'check a review, checkareview, check a review website, CheckAReview, customer reviews, company reviews, business reviews',
       path: '/',
     },
   },

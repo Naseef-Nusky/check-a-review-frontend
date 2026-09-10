@@ -89,6 +89,11 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  if ((pathname === '/' || pathname === '/index.html') && isBot) {
+    await proxy(`${apiOrigin}/api/prerender/home`, res, 'text/html; charset=utf-8')
+    return
+  }
+
   // IndexNow key file (must be on the public site host)
   if (/^\/[A-Za-z0-9_-]+\.txt$/.test(pathname)) {
     const keyPath = path.join(distDir, pathname.slice(1))
