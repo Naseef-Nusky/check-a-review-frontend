@@ -21,6 +21,7 @@ export default function ClaimBusinessPage() {
   const [business, setBusiness] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [claimInProgress, setClaimInProgress] = useState(false)
   const [form, setForm] = useState(initialForm)
   const [files, setFiles] = useState([])
   const [submitting, setSubmitting] = useState(false)
@@ -30,13 +31,21 @@ export default function ClaimBusinessPage() {
     let active = true
     setLoading(true)
     setError('')
-    publicApi
-      .getBusiness(identifier)
-      .then((profile) => {
+    setClaimInProgress(false)
+    Promise.all([
+      publicApi.getBusiness(identifier),
+      publicApi.getClaimAvailability(identifier).catch(() => null),
+    ])
+      .then(([profile, availability]) => {
         if (!active) return
         setBusiness(profile)
-        if (profile.claimed) {
+        if (profile.claimed || availability?.claimed) {
           setError('This business profile has already been claimed.')
+        } else if (availability?.claimInProgress) {
+          setClaimInProgress(true)
+          setError(
+            'Only one claim request is allowed per business at a time. A request is already in progress.',
+          )
         }
       })
       .catch((err) => {
@@ -54,6 +63,7 @@ export default function ClaimBusinessPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    if (business?.claimed || claimInProgress) return
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match')
       return
@@ -104,10 +114,11 @@ export default function ClaimBusinessPage() {
           <p className="text-sm font-semibold uppercase tracking-wide text-primary-600">Claim request created</p>
           <h1 className="mt-2 text-3xl font-semibold text-ink">Check your email</h1>
           <p className="mt-4 text-sm leading-relaxed text-ink-muted">
-            Your claim for <strong className="text-ink">{business.name}</strong> is pending. We sent a verification
-            link to your email. After you verify, our team will review your request.
+            Your claim for <strong className="text-ink">{business.name}</strong> is pending. We sent a
+            6-digit verification code to your email. Enter it on the verify page (or use the link in the
+            email) so our team can review your request.
           </p>
-          <p className="mt-3 text-sm text-ink-muted">Status: Pending · Email: Unverified until you click the link</p>
+          <p className="mt-3 text-sm text-ink-muted">Status: Pending · Email: Unverified until you enter the code</p>
           <Link
             to={businessProfilePath(business)}
             className="mt-8 inline-flex rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
@@ -138,7 +149,7 @@ export default function ClaimBusinessPage() {
           <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         ) : null}
 
-        {!business.claimed ? (
+        {!business.claimed && !claimInProgress ? (
           <form className="mt-8 space-y-5" onSubmit={onSubmit}>
             {[
               { key: 'fullName', label: 'Full name', type: 'text' },

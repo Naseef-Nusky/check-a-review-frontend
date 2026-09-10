@@ -117,7 +117,14 @@ export const publicApi = {
     })
     return api.upload(`/claims/businesses/${idOrSlug}/claim`, formData)
   },
-  verifyBusinessClaimEmail: (token) => api.post('/claims/verify-email', { token }),
+  getClaimAvailability: (idOrSlug) => api.get(`/claims/businesses/${idOrSlug}/availability`),
+  verifyBusinessClaimEmail: (tokenOrCode) =>
+    api.post('/claims/verify-email', { code: tokenOrCode, token: tokenOrCode }),
+  resendClaimVerification: (email, businessId) =>
+    api.post('/claims/resend-verification', {
+      email,
+      ...(businessId != null ? { businessId: String(businessId) } : {}),
+    }),
   getCategories: () => api.get('/businesses/categories'),
   getBusinessReviews: (businessId, limit = 20) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),
