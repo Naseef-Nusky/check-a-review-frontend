@@ -11,7 +11,7 @@ const contactItems = [
   { label: 'Office', value: '125 Deansgate, Greater Manchester M3 2BY', icon: MapPin },
 ]
 
-const emptyForm = { name: '', email: '', subject: '', message: '' }
+const emptyForm = { name: '', email: '', subject: '', message: '', poweredBy: '', companyUrl: '' }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -39,12 +39,20 @@ function validateSimpleContact(form) {
   return {
     errors,
     isValid: Object.keys(errors).length === 0,
-    normalized: { name, email: email.toLowerCase(), subject, message },
+    normalized: {
+      name,
+      email: email.toLowerCase(),
+      subject,
+      message,
+      poweredBy: String(form.poweredBy || ''),
+      companyUrl: String(form.companyUrl || ''),
+      formStartedAt: form.formStartedAt,
+    },
   }
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState(emptyForm)
+  const [form, setForm] = useState(() => ({ ...emptyForm, formStartedAt: Date.now() }))
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -72,7 +80,7 @@ export default function ContactPage() {
     try {
       await publicApi.submitContact(normalized)
       setSuccess('Thank you for contacting us. We will get back to you shortly.')
-      setForm(emptyForm)
+      setForm({ ...emptyForm, formStartedAt: Date.now() })
       setFieldErrors({})
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Failed to send message. Please try again.')
@@ -100,6 +108,31 @@ export default function ContactPage() {
               {error}
             </div>
           ) : null}
+
+          {/* Honeypot fields — hidden from humans, bots often fill them */}
+          <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
+            <label htmlFor="poweredBy">Powered by</label>
+            <input
+              id="poweredBy"
+              name="poweredBy"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.poweredBy}
+              onChange={update('poweredBy')}
+            />
+            <label htmlFor="companyUrl">Company URL</label>
+            <input
+              id="companyUrl"
+              name="companyUrl"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.companyUrl}
+              onChange={update('companyUrl')}
+            />
+          </div>
+
           <Input
             id="name"
             label="Name"
