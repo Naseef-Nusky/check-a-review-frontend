@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Flag, MapPin, Share2, ThumbsUp, X } from 'lucide-react'
 import StarRating from '../common/StarRating'
 import Badge from '../common/Badge'
@@ -14,6 +14,46 @@ const REPORT_REASONS = [
   'Contains personal or private information',
   'Other',
 ]
+
+const HELPFUL_STORAGE_PREFIX = 'car:helpful:'
+const VISITOR_STORAGE_KEY = 'car:visitor-id'
+
+function getOrCreateVisitorId() {
+  try {
+    let id = localStorage.getItem(VISITOR_STORAGE_KEY)
+    if (!id) {
+      id = crypto.randomUUID?.() || `v-${Date.now()}-${Math.random().toString(36).slice(2)}`
+      localStorage.setItem(VISITOR_STORAGE_KEY, id)
+    }
+    return id
+  } catch {
+    return `v-${Date.now()}`
+  }
+}
+
+function readHelpfulMarked(reviewId) {
+  if (!reviewId) return false
+  try {
+    return localStorage.getItem(`${HELPFUL_STORAGE_PREFIX}${reviewId}`) === '1'
+  } catch {
+    return false
+  }
+}
+
+function writeHelpfulMarked(reviewId) {
+  if (!reviewId) return
+  try {
+    localStorage.setItem(`${HELPFUL_STORAGE_PREFIX}${reviewId}`, '1')
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+function resolveHelpfulCount(review) {
+  const raw = review?.helpfulCount ?? review?.helpful_count ?? 0
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 0 ? n : 0
+}
 
 function ReportModal({ reviewId, onClose }) {
   const [reason, setReason] = useState('')
@@ -138,9 +178,15 @@ export default function ReviewCard({
   businessName,
   businessLogo,
 }) {
-  const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount || 0)
-  const [markedHelpful, setMarkedHelpful] = useState(false)
+  const [helpfulCount, setHelpfulCount] = useState(() => resolveHelpfulCount(review))
+  const [markedHelpful, setMarkedHelpful] = useState(() => readHelpfulMarked(review.id))
+  const [helpfulBusy, setHelpfulBusy] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
+
+  useEffect(() => {
+    setHelpfulCount(resolveHelpfulCount(review))
+    setMarkedHelpful(readHelpfulMarked(review.id))
+  }, [review.id, review.helpfulCount, review.helpful_count])
 
   const author = review.author || 'Anonymous'
   const isDetailed = variant === 'detailed'
@@ -148,14 +194,27 @@ export default function ReviewCard({
     review.reply?.avatar || review.businessLogo || businessLogo || '',
   )
 
-  const handleHelpful = () => {
-    if (markedHelpful) {
-      setMarkedHelpful(false)
-      setHelpfulCount((count) => Math.max(0, count - 1))
-      return
-    }
+  const handleHelpful = async () => {
+    if (!review.id || markedHelpful || helpfulBusy) return
+
+    setHelpfulBusy(true)
+    // Optimistic UI: show marked + count immediately
     setMarkedHelpful(true)
-    setHelpfulCount((count) => count + 1)
+    setHelpfulCount((count) => Math.max(1, count + 1))
+    writeHelpfulMarked(review.id)
+
+    try {
+      const result = await publicApi.markReviewHelpful(review.id, getOrCreateVisitorId())
+      if (typeof result?.helpfulCount === 'number') {
+        setHelpfulCount(result.helpfulCount)
+      }
+      setMarkedHelpful(true)
+      writeHelpfulMarked(review.id)
+    } catch {
+      // Keep sticky local mark so refresh still shows the click; count stays optimistic
+    } finally {
+      setHelpfulBusy(false)
+    }
   }
 
   const handleShare = async () => {
@@ -263,15 +322,17 @@ export default function ReviewCard({
         <button
           type="button"
           onClick={handleHelpful}
+          disabled={markedHelpful || helpfulBusy || !review.id}
+          aria-pressed={markedHelpful}
           className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition ${
             markedHelpful
-              ? 'border-primary-200 bg-primary-50 text-primary-700'
-              : 'border-border bg-white text-slate-600 hover:bg-slate-50'
+              ? 'cursor-default border-primary-200 bg-primary-50 text-primary-700'
+              : 'border-border bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50'
           }`}
         >
           <ThumbsUp className="h-4 w-4 stroke-[1.5]" strokeWidth={1.5} aria-hidden="true" />
           Helpful
-          {helpfulCount > 0 && <span className="tabular-nums text-ink-muted">({helpfulCount})</span>}
+          <span className="tabular-nums text-ink-muted">({helpfulCount})</span>
         </button>
         <button
           type="button"

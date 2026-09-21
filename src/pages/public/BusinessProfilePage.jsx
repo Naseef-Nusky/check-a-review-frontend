@@ -272,6 +272,7 @@ export default function BusinessProfilePage() {
                         ...review,
                         author: review.author_name,
                         authorAvatar: resolveMediaUrl(review.author_avatar),
+                        helpfulCount: Number(review.helpful_count || review.helpfulCount || 0),
                         date: review.created_at ? new Date(review.created_at).toLocaleDateString() : '',
                         reply: review.business_reply
                           ? {
