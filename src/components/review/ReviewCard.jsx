@@ -288,9 +288,11 @@ export default function ReviewCard({
               )}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
-              {typeof review.authorReviewCount === 'number' && (
-                <span>{review.authorReviewCount} {review.authorReviewCount === 1 ? 'review' : 'reviews'}</span>
-              )}
+              <span>
+                {Number(review.authorReviewCount || 0) === 1
+                  ? '1 review'
+                  : `${Number(review.authorReviewCount || 0)} reviews`}
+              </span>
               {review.location && (
                 <span className="inline-flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 stroke-[1.5]" strokeWidth={1.5} aria-hidden="true" />

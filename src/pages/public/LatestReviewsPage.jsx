@@ -16,6 +16,8 @@ function mapReview(review) {
     author: review.author_name || review.author || 'Customer',
     author_name: review.author_name || review.author || 'Customer',
     authorAvatar: review.author_avatar || review.authorAvatar || '',
+    authorReviewCount: Number(review.author_review_count ?? review.authorReviewCount ?? 0),
+    author_review_count: Number(review.author_review_count ?? review.authorReviewCount ?? 0),
     date: review.created_at ? new Date(review.created_at).toLocaleDateString() : '',
     business_name: review.business_name,
     business_slug: review.business_slug,

@@ -49,6 +49,11 @@ export default function HomeReviewCard({ review }) {
           <p className="truncate font-semibold text-ink" title={author}>
             {author}
           </p>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            {Number(review.authorReviewCount ?? review.author_review_count ?? 0) === 1
+              ? '1 review'
+              : `${Number(review.authorReviewCount ?? review.author_review_count ?? 0)} reviews`}
+          </p>
           <div className="mt-1">
             <StarRating rating={review.rating} size="sm" />
           </div>
