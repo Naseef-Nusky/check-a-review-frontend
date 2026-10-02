@@ -126,7 +126,7 @@ export const publicApi = {
       ...(businessId != null ? { businessId: String(businessId) } : {}),
     }),
   getCategories: () => api.get('/businesses/categories'),
-  getBusinessReviews: (businessId, limit = 20) =>
+  getBusinessReviews: (businessId, limit = 1000) =>
     api.get(`/reviews/business/${businessId}?limit=${limit}`),
   getLatestReviews: (params = {}) => {
     const options = typeof params === 'number' ? { limit: params } : params
