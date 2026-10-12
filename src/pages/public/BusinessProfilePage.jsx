@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import { Check, ExternalLink, Globe, Mail, MapPin, Pencil, Phone, Sparkles } from 'lucide-react'
+import { Check, ExternalLink, Globe, MapPin, Pencil, Phone, Sparkles } from 'lucide-react'
 import StarRating from '../../components/common/StarRating'
 import ReviewCard from '../../components/review/ReviewCard'
 import RatingDistribution from '../../components/review/RatingDistribution'
@@ -544,14 +544,6 @@ export default function BusinessProfilePage() {
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" strokeWidth={1.75} />
                 <span>{business.address || 'Address not listed'}</span>
               </li>
-              {business.email ? (
-                <li className="flex gap-3">
-                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" strokeWidth={1.75} />
-                  <a href={`mailto:${business.email}`} className="underline underline-offset-2 hover:text-primary-700">
-                    {business.email}
-                  </a>
-                </li>
-              ) : null}
               {business.phone ? (
                 <li className="flex gap-3">
                   <Phone className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" strokeWidth={1.75} />
