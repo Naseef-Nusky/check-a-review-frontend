@@ -28,7 +28,7 @@ export default function StarRating({
             return (
               <Star
                 key={i}
-                className={`${iconSize} fill-amber-400 text-amber-400`}
+                className={`${iconSize} fill-primary-500 text-primary-500`}
                 strokeWidth={1.5}
                 aria-hidden="true"
               />
@@ -45,7 +45,7 @@ export default function StarRating({
                 />
                 <span className="absolute inset-0 overflow-hidden" style={{ width: '50%' }}>
                   <Star
-                    className={`${iconSize} fill-amber-400 text-amber-400`}
+                    className={`${iconSize} fill-primary-500 text-primary-500`}
                     strokeWidth={1.5}
                     aria-hidden="true"
                   />

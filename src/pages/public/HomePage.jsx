@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import SearchBar from '../../components/common/SearchBar'
+import HeroSearchBar from '../../components/common/HeroSearchBar'
 import BusinessCard from '../../components/business/BusinessCard'
 import RecentReviewsSection from '../../components/review/RecentReviewsSection'
 import Button from '../../components/common/Button'
@@ -105,7 +105,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden px-4 py-24 text-white sm:px-6 lg:px-8">
+      <section className="relative overflow-x-clip px-4 py-24 text-white sm:px-6 lg:px-8">
         <HeroBackground />
         <div className="relative z-10 mx-auto max-w-5xl text-center">
           <p className="section-kicker text-primary-200">Customer trust, measured</p>
@@ -116,7 +116,7 @@ export default function HomePage() {
             Discover verified reviews, compare reputation signals, and make better decisions with a professional review platform.
           </p>
           <div className="mx-auto mt-10 max-w-2xl">
-            <SearchBar placeholder="Search companies..." variant="dark" />
+            <HeroSearchBar placeholder="Search company or category..." variant="dark" />
           </div>
         </div>
       </section>
