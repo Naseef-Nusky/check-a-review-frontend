@@ -37,6 +37,22 @@ function websiteHost(url) {
   }
 }
 
+/** Public blurb only — strip packed CRM/portal meta lines stored in businesses.description */
+function publicBusinessDescription(description = '') {
+  return String(description || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line &&
+        !/^(Location|Address|ZIP\s*\/\s*Postal code|Job title|Annual revenue|Employees|Contact):\s*/i.test(
+          line,
+        ),
+    )
+    .join('\n')
+    .trim()
+}
+
 function TopicCarousel({ highlights = [], cons = [] }) {
   const topics = [
     ...highlights.map((text) => ({ text, tone: 'positive' })),
@@ -298,7 +314,9 @@ export default function BusinessProfilePage() {
   const logoSrc = resolveMediaUrl(business.logo_url)
   const profilePath = businessProfilePath(business)
   const host = websiteHost(business.website)
+  const aboutText = publicBusinessDescription(business.description)
   const profileDescription = [
+    aboutText || null,
     `${business.name} reviews on Check A Review.`,
     `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'}.`,
     rating > 0 ? `Average rating ${rating.toFixed(1)} out of 5.` : null,
@@ -538,7 +556,18 @@ export default function BusinessProfilePage() {
             style={{ scrollMarginTop: STICKY_OFFSET }}
             className="border-b border-slate-100 px-4 py-8"
           >
-            <h2 className="text-xl font-semibold text-ink">Contact info</h2>
+            <h2 className="text-xl font-semibold text-ink">About</h2>
+            {aboutText ? (
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-ink">
+                {aboutText}
+              </p>
+            ) : (
+              <p className="mt-4 text-sm text-ink-muted">
+                This business hasn&apos;t added a description yet.
+              </p>
+            )}
+
+            <h3 className="mt-8 text-lg font-semibold text-ink">Contact info</h3>
             <ul className="mt-5 space-y-4 text-sm text-ink">
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" strokeWidth={1.75} />
@@ -777,7 +806,12 @@ export default function BusinessProfilePage() {
 
               <div className="rounded-2xl border border-border p-5">
                 <h3 className="font-semibold text-ink">Company details</h3>
-                <dl className="mt-4 space-y-3 text-sm">
+                {aboutText ? (
+                  <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-ink">
+                    {aboutText}
+                  </p>
+                ) : null}
+                <dl className={`space-y-3 text-sm ${aboutText ? 'mt-5 border-t border-border pt-5' : 'mt-4'}`}>
                   <div>
                     <dt className="text-ink-muted">Website</dt>
                     <dd className="mt-1 text-ink">
